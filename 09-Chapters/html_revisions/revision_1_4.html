@@ -1,0 +1,108 @@
+<!-- REVISION: section 1.4 + Figure 1.1 — replaces lines 185-264 -->
+
+  <h3>1.4 The 4-Stage Absorptive Capacity Pipeline</h3>
+  <p>
+    The backbone of the learning model comes from the theory presented by Zahra &amp; George's (2002) reformulation of
+    absorptive capacity, which describes how organizations acquire, process, and use external knowledge. Rather than treating
+    learning as a single binary event, the model implements a four-stage pipeline through which incident knowledge must pass
+    before it changes a team's behavior.
+  </p>
+
+  <p>
+    Stage 1 — Acquisition:
+    Does the team receive the incident knowledge? A team that is not in the sharing scope for an incident
+    never even sees the postmortem. Teams within scope receive the incident with a probability that reflects
+    their current communication network.
+  </p>
+
+  <p>
+    Stage 2 — Assimilation:
+    Does the team that has passed the acquisition stage understand the knowledge? Even when a team receives a postmortem,
+    they may not fully grasp its implications for their own systems. Assimilation probability is influenced by the team's
+    existing knowledge base.
+  </p>
+
+  <p>
+    Stage 3 — Transformation:
+    Does the team connect the new knowledge to what they already know? Transformation is the cognitive work of integration.
+    This stage has the highest failure point in the model, reflecting real-world evidence that cross-domain knowledge
+    transfer is difficult.
+  </p>
+
+  <p>
+    Stage 4 — Exploitation:
+    Does the team actually change its behavior to reduce future incidents? This is the stage at which reliability outcomes
+    are measured. A team that fully exploits an incident's lesson lowers the base incident rate for the relevant subsystems.
+  </p>
+
+  <table style="border-collapse: collapse; width: 100%; margin: 1.5em 0; font-size: 0.92em;">
+    <caption style="text-align: left; font-weight: bold; margin-bottom: 0.4em; color: #333;">
+      Transformation vs. Exploitation — Concrete Distinction
+    </caption>
+    <thead>
+      <tr>
+        <th style="border: 1px solid #ccc; padding: 8px 12px; background: #f0f0f0; text-align: left; width: 18%;">Stage</th>
+        <th style="border: 1px solid #ccc; padding: 8px 12px; background: #f0f0f0; text-align: left;">Concrete Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 8px 12px; font-weight: bold; vertical-align: top;">Transformation</td>
+        <td style="border: 1px solid #ccc; padding: 8px 12px;">A team reads a database postmortem and realizes their own connection pool configuration has the same vulnerability — they mentally connect it to their system. Cognitive connection made, structural understanding updated; no action taken yet.</td>
+      </tr>
+      <tr style="background: #f9f9f9;">
+        <td style="border: 1px solid #ccc; padding: 8px 12px; font-weight: bold; vertical-align: top;">Exploitation</td>
+        <td style="border: 1px solid #ccc; padding: 8px 12px;">The team actually changes the connection pool configuration, updates the runbook, and adds a monitoring alert — behavior changes, and incident risk drops.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Figure 1.1: Absorptive Capacity Pipeline -->
+  <figure style="margin: 2em 0; text-align: center;">
+    <svg viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; font-family: sans-serif;">
+      <rect width="900" height="200" fill="#f9f9f9" rx="8"/>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#555"/>
+        </marker>
+        <marker id="arrd" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
+          <path d="M0,0 L8,0 L4,8 z" fill="#27ae60"/>
+        </marker>
+      </defs>
+      <rect x="20" y="70" width="110" height="60" rx="8" fill="#e74c3c"/>
+      <text x="75" y="97" text-anchor="middle" fill="white" font-weight="bold" font-size="13">INCIDENT</text>
+      <text x="75" y="115" text-anchor="middle" fill="white" font-size="11">occurs</text>
+      <line x1="130" y1="100" x2="168" y2="100" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="170" y="55" width="130" height="90" rx="8" fill="#2980b9"/>
+      <text x="235" y="82" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Stage 1</text>
+      <text x="235" y="100" text-anchor="middle" fill="white" font-size="12">Acquisition</text>
+      <text x="235" y="120" text-anchor="middle" fill="#cce5ff" font-size="10">p = P_acquire × decay^hops</text>
+      <text x="235" y="135" text-anchor="middle" fill="#cce5ff" font-size="10">Who sees the postmortem?</text>
+      <line x1="300" y1="100" x2="338" y2="100" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="340" y="55" width="130" height="90" rx="8" fill="#8e44ad"/>
+      <text x="405" y="82" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Stage 2</text>
+      <text x="405" y="100" text-anchor="middle" fill="white" font-size="12">Assimilation</text>
+      <text x="405" y="120" text-anchor="middle" fill="#e8d5f5" font-size="10">p = P_assimilate</text>
+      <text x="405" y="135" text-anchor="middle" fill="#e8d5f5" font-size="10">Do they understand it?</text>
+      <line x1="470" y1="100" x2="508" y2="100" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="510" y="55" width="130" height="90" rx="8" fill="#e67e22"/>
+      <text x="575" y="82" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Stage 3</text>
+      <text x="575" y="100" text-anchor="middle" fill="white" font-size="12">Transformation</text>
+      <text x="575" y="120" text-anchor="middle" fill="#fde8cc" font-size="10">p = cosine similarity</text>
+      <text x="575" y="135" text-anchor="middle" fill="#fde8cc" font-size="10">Can they connect it?</text>
+      <line x1="640" y1="100" x2="678" y2="100" stroke="#555" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="680" y="55" width="130" height="90" rx="8" fill="#27ae60"/>
+      <text x="745" y="82" text-anchor="middle" fill="white" font-weight="bold" font-size="13">Stage 4</text>
+      <text x="745" y="100" text-anchor="middle" fill="white" font-size="12">Exploitation</text>
+      <text x="745" y="120" text-anchor="middle" fill="#ccf2d5" font-size="10">p = P_exploit</text>
+      <text x="745" y="135" text-anchor="middle" fill="#ccf2d5" font-size="10">Do they change behavior?</text>
+      <line x1="745" y1="145" x2="745" y2="175" stroke="#27ae60" stroke-width="2" marker-end="url(#arrd)"/>
+      <text x="745" y="193" text-anchor="middle" fill="#27ae60" font-size="11" font-weight="bold">Incident Risk Reduced</text>
+    </svg>
+    <figcaption style="font-size: 0.85em; color: #555; margin-top: 0.5em;">
+      <strong>Figure 1.1.</strong> The four-stage absorptive capacity pipeline. An incident must clear all four stages before
+      it reduces future incident risk. Each stage has its own probability; failure at any stage stops the pipeline for that team.
+    </figcaption>
+  </figure>
+
+<!-- END REVISION 1.4 -->

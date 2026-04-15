@@ -1,0 +1,36 @@
+# Requirements for Organizational Learning Simulation
+# Master's Thesis Project
+#
+# Install with: pip install -r requirements.txt
+# Python version: 3.9+
+
+# =============================================================================
+# Core Dependencies
+# =============================================================================
+numpy>=1.24.0          # Array operations, random number generation
+networkx>=3.1          # Graph/network operations (team communication networks)
+matplotlib>=3.7.0      # Visualization and plotting
+pandas>=2.0.0          # Data manipulation for experiment results
+
+# =============================================================================
+# Statistical Analysis
+# =============================================================================
+scipy>=1.10.0          # Statistical tests (t-tests, confidence intervals)
+
+# =============================================================================
+# Testing
+# =============================================================================
+pytest>=7.0.0          # Unit testing framework
+
+# =============================================================================
+# Optional: Web Dashboard (Streamlit)
+# =============================================================================
+streamlit>=1.32.0      # Interactive web dashboard (optional)
+
+# =============================================================================
+# Optional: Development Tools
+# =============================================================================
+# jupyter>=1.0.0       # Jupyter notebook support
+# ipykernel>=6.0.0     # Jupyter kernel
+# black>=23.0.0        # Code formatting
+# flake8>=6.0.0        # Linting

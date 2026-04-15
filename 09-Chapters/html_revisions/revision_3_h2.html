@@ -1,0 +1,189 @@
+<!-- REVISION: section 3 H2 — replaces lines 650-790 -->
+
+  <h2 id="h2-deployment">3. H2 — Deployment Velocity and Incident Risk</h2>
+
+  <h3>3.1 The Question</h3>
+  <p>
+    The question posed: does deploying software updates more frequently cause more incidents? The DevOps research
+    literature (Forsgren et al., Accelerate, 2018) states a formal paradox — high performing organizations move faster and fail less. Our Hypothesis 2 investigates
+    this tension directly, by asking whether the type of organizational learning moderates the relationship between a team's deployment velocity and incident counts.
+  </p>
+  <p>
+    H2 is confirmed if higher deployment rates produce more incidents, and if this effect is smaller under GLOBAL sharing than under LOCAL. A flat relationship between deployment rate and incident count would suggest the model is not capturing deployment risk correctly.
+  </p>
+
+  <h3>3.2 A Real-World Analogy: Two Engineering Teams and Their Deploy Cadence</h3>
+  <p>
+    Consider two software engineering teams deploying bug fixes and feature updates to production regularly. Team A deploys once a week; Team B deploys
+    every day or two. In the short run, Team B will encounter more incidents simply because they are pushing changes more often — more deployments yield more chances
+    to introduce a regression into production code.
+  </p>
+  <p>
+    Now suppose Team B also learns faster. Every outage is a learning opportunity: the team writes a postmortem,
+    identifies the root causes and key events, and updates their deployment checklist or automated tests (exploitation). The question is what
+    happens to those lessons. If they stay with Team B, the team itself improves but the rest of the engineering organization keeps recurring the same
+    mistakes. If the lessons are shared in incident reviews, the organization as a whole gets smarter, and future incidents become less likely
+    across teams. The same number of deployments produces very different reliability outcomes depending on whether learning stays local or spreads globally.
+  </p>
+
+  <h3>3.3 What Deployment Rate Means in the Model</h3>
+  <p>
+    Each team is given a deployment rate parameter representing the probability of deploying on any given day. At 0.05,
+    a team deploys roughly once every three weeks. At 0.50, a team deploys on approximately half of all working days. In the formula, a
+    deployment risk multiplier of 1.5× is applied to incident probability on deployment days.
+  </p>
+  <pre class="formula">p_incident = base_rate × (1 - avg_prevention × prevention_effect) × deployment_modifier</pre>
+
+  <h3>3.4 Experimental Design</h3>
+  <p>
+    H2 was tested using a controlled sweep across five deployment rate conditions: 0.05, 0.10, 0.20, 0.30, and 0.50.
+    All other parameters were held fixed: 20 teams, Watts-Strogatz network, 365 days, 100 seeds per condition. Both GLOBAL and LOCAL learning scenarios were tested.
+  </p>
+
+  <p><strong>Table 3.0: H2 Experimental Parameters</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Variable swept</td>
+        <td>deployment_rate</td>
+        <td>0.05, 0.10, 0.20, 0.30, 0.50</td>
+      </tr>
+      <tr>
+        <td>Scenarios tested</td>
+        <td>GLOBAL and LOCAL</td>
+        <td>Held constant within each sweep row</td>
+      </tr>
+      <tr>
+        <td>Deployment risk multiplier</td>
+        <td>1.5×</td>
+        <td>Applied to incident probability on deployment days</td>
+      </tr>
+      <tr>
+        <td>Network topology</td>
+        <td>Watts-Strogatz (ws_k=4, p=0.1)</td>
+        <td>Same as H1</td>
+      </tr>
+      <tr>
+        <td>Prevention effect</td>
+        <td>0.10</td>
+        <td>Fixed</td>
+      </tr>
+      <tr>
+        <td>Seeds per condition</td>
+        <td>100</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Simulation duration</td>
+        <td>365 days</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.5 Results</h3>
+  <p><strong>Table 3.1: Total Incidents by Deployment Rate and Learning Scenario (mean over 100 seeds)</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Deployment Rate</th>
+        <th><span class="scenario-global">GLOBAL</span> Incidents</th>
+        <th><span class="scenario-local">LOCAL</span> Incidents</th>
+        <th>GLOBAL Advantage</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.05 (slow)</td><td>152.5</td><td>238.1</td><td>57% fewer</td></tr>
+      <tr><td>0.10</td><td>167.0</td><td>261.4</td><td>57% fewer</td></tr>
+      <tr><td>0.20</td><td>180.7</td><td>281.5</td><td>55% fewer</td></tr>
+      <tr><td>0.30</td><td>185.2</td><td>287.5</td><td>55% fewer</td></tr>
+      <tr><td>0.50 (fast)</td><td>188.4</td><td>288.6</td><td>53% fewer</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3.6 The Saturation Finding</h3>
+  <p>
+    Going from 0.05 to 0.50 represents a 10× increase in deployment frequency. Yet GLOBAL incidents rise only from 152.5 to 188.4,
+    showing a near-flat GLOBAL curve.
+  </p>
+  <p>
+    When an organization has been operating under GLOBAL learning for a sustained period, Prevention K
+    approaches 0.992. Substituting into the formula:
+  </p>
+  <pre class="formula">(1 - avg_prevention × prevention_effect) ≈ (1 - K) = 1 - 0.992 = 0.008</pre>
+  <p>
+    Even when the deployment multiplier fires (1.5×), it multiplies against a residual risk of 0.008, because
+    each team's accumulated knowledge has already suppressed most of the baseline risk. Under LOCAL sharing,
+    teams never reach this state individually — knowledge stays within the team that experienced each failure and
+    does not spread, so most teams across the organization remain underinformed and the deployment multiplier
+    continues to act on a much higher baseline.
+  </p>
+
+  <div class="result-highlight">
+    <strong>Saturation mechanism:</strong>
+    Two rates are racing. Deployment velocity determines how fast incidents are generated. Learning velocity
+    determines how fast knowledge accumulates to prevent them from occurring.
+  </div>
+
+  <h3>3.7 Connection to DORA and the Accelerate Research</h3>
+  <p>
+    Forsgren, Humble, and Kim (2018) identified a cluster of high performers characterized by high deployment
+    frequency and low change failure rates. The H2 results offer one mechanism-level explanation consistent with this finding. When teams share incident knowledge broadly, organizational learning
+    suppresses the baseline risk fast enough that deployment velocity no longer drives incidents upward proportionally. The simulation does not claim to fully explain the DORA correlation, but isolates the specific contribution
+    of knowledge sharing structure to this relationship.
+  </p>
+
+  <h3>3.8 The Cross-Sweep: H2 × H3 Interaction (Experiment 10)</h3>
+  <p>
+    The question posed here: does the effort a team invests in postmortems change the impact of shipping software frequently? The simulation
+    indicates these are two independent levers.
+  </p>
+
+  <p><strong>Table 3.2: Mean Incidents — Deployment Rate × Exploitation Probability (100 seeds each)</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Deployment Rate</th>
+        <th>Exploitation 0.2<br><small>(low effort)</small></th>
+        <th>Exploitation 0.6<br><small>(moderate effort)</small></th>
+        <th>Exploitation 0.9<br><small>(high effort)</small></th>
+        <th>Row range</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>0.05</strong> (slow)</td>
+        <td>310.7</td><td>309.3</td><td>310.1</td>
+        <td><em>1.4 incidents</em></td>
+      </tr>
+      <tr>
+        <td><strong>0.10</strong></td>
+        <td>335.2</td><td>336.0</td><td>334.1</td>
+        <td><em>1.9 incidents</em></td>
+      </tr>
+      <tr>
+        <td><strong>0.30</strong> (fast)</td>
+        <td>365.9</td><td>363.6</td><td>364.0</td>
+        <td><em>2.3 incidents</em></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    Reading across any row, the numbers barely move — a maximum spread of 2.3 incidents across three different exploitation effort levels. Reading
+    down the columns, incidents rise with deployment rate as expected. The columns are flat; the rows are not. This is the orthogonality result: deployment rate
+    and exploitation intensity affect incident counts through completely separate pathways.
+  </p>
+
+  <h3>3.9 Conclusion</h3>
+  <div class="finding-box">
+    Under the conditions modeled, H2 is supported. Higher deployment rates produce more incidents across all conditions, confirming that deployment velocity is a source of incident risk in the model. However, the relationship is strongly sublinear under GLOBAL sharing: a 10× increase in deployment frequency (0.05 → 0.50) produces only a 24% increase in incidents. This is consistent with the learning saturation mechanism — when Prevention K approaches 0.992, the residual risk each deployment can trigger is near its floor. The DORA finding that high performers deploy frequently and fail less (Forsgren et al., 2018) is consistent with this mechanism, though the simulation isolates knowledge sharing as one specific contributor. Whether this saturation effect holds in real organizations depends on whether their learning pipelines approach the efficiency assumed here.
+  </div>
+
+<!-- END REVISION 3 H2 -->

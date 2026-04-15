@@ -1,0 +1,405 @@
+<!-- REVISION: sections 6-8 ablations + sweeps — replaces lines 1180-1581 -->
+
+  <h2 id="ablations-exp11-exp12">6. Ablation Tests — exp11 (Knowledge Decay) &amp; exp12 (Source Asymmetry)</h2>
+
+  <h3>6.1 What Is an Ablation Test?</h3>
+  <p>
+    A simulation model is built such that some components may be load-bearing: remove them, and the model's behavior
+    changes in important ways. Others are robust: when removed, the results barely shift. An ablation test is how we tell the difference.
+    The procedure is to disable one model component, re-run the full experiment under identical conditions, and compare the output to the default.
+  </p>
+  <p>
+    Experiments 11 and 12 each target a different component of the H1 learning model. Both were run under
+    the same conditions as the primary H1 experiment: 20 teams, Watts-Strogatz small-world network, 365
+    simulated days, 100 independent random seeds, all four scenarios.
+  </p>
+  <p>
+    The H1 ordering being preserved across ablations is the key test — if removing decay or source asymmetry caused the ordering to collapse, that would indicate H1 results were an artifact of those specific components rather than a fundamental property of sharing scope.
+  </p>
+  <p>
+    The key diagnostic: if the H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) survives both ablations, the result is robust to those specific modeling assumptions. If the ordering collapses, H1 would need to be re-examined.
+  </p>
+
+  <h3>6.2 exp11 — Removing Knowledge Decay</h3>
+  <p>
+    The default simulation treats prevention knowledge as impermanent. Knowledge earned by a team on day 10 can slowly erode by day 200
+    if it is not reinforced, following an exponential decay function (decay rate = 0.001 per timestep). This models engineers leaving teams,
+    practices not being enforced, and on-call rotation. The empirical grounding is Darr, Argote, and Epple's (1994) study of organizational forgetting in the service industry,
+    which tracked production knowledge across franchise locations and found that accumulated knowledge decayed measurably during idle periods when it was not being reinforced.
+  </p>
+  <p>In exp11, the knowledge decay rate is set to 0.0; knowledge earned at any point is retained in full.</p>
+  <table>
+    <thead><tr><th>Scenario</th><th>Default (decay on)</th><th>No Decay (exp11)</th><th>Difference</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="scenario-none">NONE</span></td>
+        <td>484.3</td><td>484.3</td><td>0.0</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-local">LOCAL</span></td>
+        <td>406.4</td><td>398.5</td><td>−7.9 fewer</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
+        <td>336.0</td><td>323.0</td><td>−13.0 fewer (3.9%)</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>265.6</td><td>263.3</td><td>−2.3 fewer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>Why NEIGHBOR benefits most:</strong>
+    Under the NEIGHBOR strategy, knowledge accumulates slowly, spreading outward from the source team one hop at a time over many timesteps.
+    Because that accumulation is gradual and can spread across many teams at moderate levels, decay chips away at knowledge before it ever
+    reaches a self-reinforcing peak. When decay is turned off, all that slowly accumulated knowledge is preserved in full.
+
+    The GLOBAL strategy, by contrast, saturates organizational knowledge rapidly — every new incident reinforces what teams already know, so the organization is
+    constantly re-learning. Knowledge that is actively replenished each day barely erodes.
+  </p>
+  <div class="finding-box">
+    <strong>Verdict:</strong>
+    Knowledge decay is a meaningful component that affects the results in the expected direction, and its removal produces
+    changes consistent with the model's logic. The H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) is preserved under both the default and no-decay conditions, indicating that H1 results are not an artifact of the knowledge decay function.
+  </div>
+
+  <h3>6.3 exp12 — Removing Source Asymmetry</h3>
+  <p>
+    In the model, source asymmetry is one of the more important design decisions in the four-stage learning pipeline.
+    When an incident occurs at Team A (the source team), Team A is skipped in stages 2–4 of the post-incident learning pipeline. The rationale
+    is that Team A owns the affected subsystem and has experienced the incident in real time. Routing Team A through the standard learning pipeline
+    for its own incident would double-count its learning.
+  </p>
+  <p>
+    In exp12, the source team skip is removed, meaning the source team now goes through all four pipeline stages
+    for its own incident, exactly like any other learner.
+  </p>
+
+  <table>
+    <thead><tr><th>Scenario</th><th>Default (asymmetry on)</th><th>No Asymmetry (exp12)</th><th>Difference</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="scenario-none">NONE</span></td>
+        <td>484.3</td><td>484.3</td><td>0.0</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-local">LOCAL</span></td>
+        <td>406.4</td><td>437.6</td><td>+31.2 more (+7.7%)</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
+        <td>336.0</td><td>348.6</td><td>+12.6 more (+3.7%)</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>265.6</td><td>265.2</td><td>~0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>LOCAL gets substantially worse (+7.7%):</strong>
+    In the default model, the team that experiences the incident goes through a direct, high-confidence learning path. When that path is removed (exp12),
+    that team must follow the same lower-probability learning pipeline as every other learner. Because LOCAL relies entirely on the source team to carry organizational knowledge forward, removing this asymmetry substantially degrades performance — the organization's primary learning pathway is weakened.
+  </p>
+  <p>
+    <strong>GLOBAL barely changes (~0 incidents):</strong> With 20 teams learning from every incident, the
+    difference attributable to one team's pipeline path is diluted to near-zero. GLOBAL's strength is
+    precisely this redundancy.
+  </p>
+
+  <div class="finding-box">
+    <strong>Verdict:</strong> Source asymmetry is the most structurally revealing ablation in this study.
+    It exposes the fragility of narrow, source-centric learning under the conditions modeled: a configuration that depends entirely on the
+    incident-owning team to carry organizational knowledge forward. The H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) is preserved under both
+    conditions, indicating that H1 results are not an artifact of the source asymmetry design choice.
+  </div>
+
+  <h3>6.4 Combined Conclusion: What exp11 and exp12 Together Establish</h3>
+  <p>Together, the two ablations accomplish three things:</p>
+  <ol>
+    <li><strong>They strengthen confidence in model validity.</strong> When a component is removed and results change in the direction and magnitude the model's logic predicts, that is evidence the model is behaving consistently with its own internal structure.</li>
+    <li><strong>They demonstrate robustness to design choices.</strong> Neither ablation reverses the H1 ordering. Under both ablations, the ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) is a property of knowledge flow structure, not an artifact of decay rates or pipeline asymmetry.</li>
+    <li><strong>They provide mechanistic insight beyond the primary results.</strong> Exp12 illuminates why a LOCAL strategy exhibits a knowledge ceiling far below NEIGHBOR and GLOBAL under these modeled conditions.</li>
+  </ol>
+
+  <!-- ============================================================ -->
+  <hr class="section-rule">
+  <h2 id="ablation-exp13">7. Ablation — exp13 Learning Cost</h2>
+
+  <h3>7.1 The Central Question</h3>
+  <p>
+    Fewer incidents are desirable. But every postmortem review consumes engineering time. If global sharing substantially increases
+    the number of learning events that occur, and each learning event carries a real time cost, could the overhead of learning outweigh the benefit of fewer failures?
+  </p>
+  <p>Exp13 asks directly: does global knowledge sharing reduce total engineering cost, or does the learning overhead it generates cancel out the firefighting hours it saves?</p>
+
+  <h3>7.2 Two Buckets of Cost</h3>
+  <p>
+    <strong>Cost Type 1 — Incident Response Cost (firefighting):</strong> When a production system fails,
+    engineers drop what they are doing and restore it. Formula:
+  </p>
+  <pre class="formula">engineering_cost_base (4 hrs) × severity_scale × duration_scale</pre>
+  <p>
+    <strong>Cost Type 2 — Learning Cost (investment):</strong> When teams move through the four-stage
+    knowledge pipeline — reading postmortems, attending retrospectives, updating runbooks — they spend time
+    tracked separately:
+  </p>
+  <pre class="formula">learning_cost = 2.0 hours per successful learning event</pre>
+  <p>
+    More sharing produces more learning events, increasing learning cost. It also produces more knowledge capital,
+    decreasing future incidents and firefighting cost. These two effects work against each other throughout the 365-day simulation.
+  </p>
+
+  <h3>7.3 How the Cost Dynamics Evolve Over Time</h3>
+  <p>
+    In the GLOBAL scenario, the learning cost is front-loaded. Prevention knowledge reaches near-saturation (k = 0.992)
+    by approximately day 90. Incident rates drop sharply, and fewer incidents also mean fewer learning events, so learning overhead shrinks as well.
+    By year's end, the learning investment was concentrated in those first 90 days, while the avoided-firefighting benefit accumulates across the remaining days of the simulation.
+  </p>
+  <div class="finding-box">
+    <strong>Core insight:</strong> The learning cost is front-loaded; the prevention benefit is persistent.
+  </div>
+
+  <h3>7.4 Results</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Incidents</th>
+        <th>Firefighting Hrs</th>
+        <th>Learning Hrs</th>
+        <th>Total Hrs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="scenario-none">NONE</span></td>
+        <td>484</td><td>1,970</td><td>0</td><td>1,970</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-local">LOCAL</span></td>
+        <td>406</td><td>1,377</td><td>~400</td><td>~1,777</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
+        <td>336</td><td>959</td><td>~500</td><td>~1,459</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>265</td><td>609</td><td>~580</td><td>~1,189</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Within this model, a consistent trend emerges: as sharing scope widens, total engineering cost decreases. Although more sharing produces
+    higher learning overhead, the firefighting savings exceed that overhead at every level.
+
+    The GLOBAL scenario spends the most on learning (~580 hours) because every team processes every incident report.
+    That investment is associated with a reduction of 1,361 firefighting hours relative to the no-sharing baseline.
+    After accounting for learning cost, GLOBAL still yields a net savings of ~781 hours — the highest net savings among all scenarios modeled.
+  </p>
+
+  <h3>7.5 The Return on Investment Calculation</h3>
+  <div class="result-highlight">
+    <strong>GLOBAL learning economics (under modeled conditions):</strong><br>
+    Learning investment: ~580 engineering hours<br>
+    Firefighting savings (vs. NONE): ~1,361 engineering hours<br>
+    Net gain: ~781 engineering hours per year, per 20-team organization<br>
+    This corresponds to a 2.3× return on every hour invested in learning within this model.
+  </div>
+
+  <h3>7.6 Model Integrity: Learning Cost as Pure Accounting</h3>
+  <p>
+    Setting the learning cost parameter to 0.0 produced identical incident counts to the standard configuration. This confirms
+    that the cost-tracking layer is correctly isolated from the simulation's learning mechanics. Learning cost is a measurement instrument,
+    not a feedback mechanism.
+  </p>
+
+  <h3>7.7 Conclusion</h3>
+  <div class="finding-box">
+    Under the conditions modeled, choosing not to invest in post-incident learning does not appear to be a cost-saving strategy — it functions as a cost-shifting strategy,
+    moving engineering time from learning overhead into a larger firefighting burden.
+    In this 20-team simulation, the difference in total engineering hours across scenarios is measurable and consistent across all 100 seeds.
+  </div>
+
+  <!-- ============================================================ -->
+  <hr class="section-rule">
+  <h2 id="sensitivity-sweeps">8. Sensitivity Sweeps — Which Model Knobs Matter?</h2>
+
+  <h3>8.1 Sensitivity Sweeps vs. Ablation Studies</h3>
+  <p>
+    An ablation study removes a component entirely to test whether it contributes at all. A sensitivity sweep
+    keeps the component active but varies its numeric value across a wide range, asking whether the findings
+    would change if the model had been calibrated differently.
+  </p>
+
+  <h3>8.2 Sweep 1 — Acquisition Probability (Stage 1 Gate)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team reads and registers a postmortem that
+    has been shared into their knowledge pool. Default: 0.9. Range tested: 0.3, 0.5, 0.7, 0.9, 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Acquisition Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.9)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.3 (low)</td><td>373.9</td><td>+43.9</td><td>Significant degradation</td></tr>
+      <tr><td>0.5</td><td>336.0</td><td>+6.0</td><td>Near-default performance</td></tr>
+      <tr><td>0.7</td><td>330.1</td><td>+0.1</td><td>Negligible difference</td></tr>
+      <tr><td><strong>0.9 (default)</strong></td><td><strong>330.0</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>1.0 (perfect)</td><td>324.0</td><td>−6.0</td><td>Minor gain</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The span of ~43 incidents (~11% variation) makes this <strong>moderately sensitive</strong>. The critical
+    threshold appears between 0.3 and 0.5: below 0.5, teams miss enough postmortems that incident counts rise
+    sharply (~39 additional incidents). Above 0.5, the daily retry mechanism compensates and raising the
+    rate further yields diminishing returns — moving from 0.9 to perfect (1.0) saves only 6 more incidents.
+    H1 ordering holds across the full range tested.
+  </p>
+
+  <h3>8.3 Sweep 2 — Assimilation Probability (Stage 2)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team deeply understands an acquired
+    postmortem. Default: 0.7. Range tested: 0.1 through 1.0 in increments of 0.1.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Assimilation Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.7)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.1 (very low)</td><td>339</td><td>+3</td><td>Within noise band</td></tr>
+      <tr><td>0.3</td><td>338</td><td>+2</td><td>Within noise band</td></tr>
+      <tr><td>0.5</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td><strong>0.7 (default)</strong></td><td><strong>336</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>0.9</td><td>334</td><td>−2</td><td>Within noise band</td></tr>
+      <tr><td>1.0 (perfect)</td><td>333</td><td>−3</td><td>Within noise band</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Only 6 incidents of total spread across a 10× range, with all confidence intervals overlapping.
+    <strong>Not sensitive.</strong> The daily retry mechanism explains this: a team that fails to assimilate
+    on day 1 tries again on day 2, and every subsequent day until it succeeds. Over 365 days, even a 10%
+    per-day probability guarantees eventual success for nearly every postmortem. Time absorbs the delay.
+  </p>
+
+  <h3>8.4 Sweep 3 — Exploitation Probability (Stage 4)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team implements a concrete prevention action
+    after transforming a postmortem's lesson. Default: 0.6. Range tested: 0.1 through 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Exploitation Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.6)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.1 (very low)</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td>0.3</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td><strong>0.6 (default)</strong></td><td><strong>336</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>0.8</td><td>335</td><td>−1</td><td>Within noise band</td></tr>
+      <tr><td>1.0 (perfect)</td><td>334</td><td>−2</td><td>Within noise band</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Only 3 incidents of total spread — 0.7% variation. <strong>Not sensitive.</strong> Stage 3
+    (transformation, gated by cosine similarity) is the true bottleneck: teams that cannot connect an
+    incoming postmortem to their own systems never reach Stage 4 regardless of how willing they are to act.
+    Raising exploitation probability has negligible effect when the pipeline is blocked upstream. This directly
+    corroborates H3 — the bottleneck in this model is recognition capacity, not execution willingness.
+  </p>
+
+  <h3>8.5 Sweep 4 — Signal Decay</h3>
+  <p>
+    <strong>What it is:</strong> A per-hop multiplier applied to acquisition probability along multi-hop
+    sharing paths. Formula: p_acquire = acquisition_prob &times; signal_decay<sup>path_length</sup>. Default: 0.8. Range tested: 0.3 through 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Signal Decay Rate</th>
+        <th>Effective p at 1 hop</th>
+        <th>Effective p at 2 hops</th>
+        <th>Mean Incidents (NEIGHBOR)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.3 (severe)</td><td>0.27</td><td>0.08</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td>0.5</td><td>0.45</td><td>0.23</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td><strong>0.8 (default)</strong></td><td><strong>0.72</strong></td><td><strong>0.58</strong></td><td><strong>336.0</strong></td><td>Baseline</td></tr>
+      <tr><td>0.9</td><td>0.81</td><td>0.73</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td>1.0 (no decay)</td><td>0.90</td><td>0.90</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Zero variation across the full range. <strong>Behaviorally dormant under NEIGHBOR</strong>: in this
+    configuration, all learning teams are exactly one hop from the incident source, so decay<sup>1</sup> is
+    just a flat multiplier that Stage 1's retry mechanism compensates for over time. The parameter becomes
+    consequential in sparse-network or multi-hop global configurations — it is designed for those cases, not
+    vestigial.
+  </p>
+
+  <h3>8.6 Sweep 5 — Initial Knowledge State (Cold vs. Warm Start)</h3>
+  <p>
+    <strong>What it is:</strong> The default initializes all teams with zero prior knowledge (cold start).
+    This sweep tests whether pre-existing organizational knowledge changes the findings.
+  </p>
+  <table>
+    <thead><tr><th>Condition</th><th>Rate-Adjusted Incidents/Day</th></tr></thead>
+    <tbody>
+      <tr><td>Cold NEIGHBOR</td><td>0.920</td></tr>
+      <tr><td>Warm GLOBAL → NEIGHBOR</td><td>0.718</td></tr>
+      <tr><td>Warm LOCAL → LOCAL</td><td>1.091</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The warm GLOBAL start produced a <strong>22% improvement</strong> in daily incident rate relative to the
+    cold NEIGHBOR baseline. The warm LOCAL start performed <em>worse</em> than the cold baseline — teams
+    accumulated narrow, domain-specific knowledge that does not transfer well across subsystems. The LOCAL warm start illustrates how
+    a history of siloed learning can create the <em>appearance</em> of preparation without cross-domain breadth.
+  </p>
+  <p>
+    <strong>Implication for H1:</strong> The cold start default is deliberately conservative. Mature
+    organizations with accumulated cross-team knowledge are closer to the warm GLOBAL
+    condition. The 45% incident reduction observed in H1 may understate the advantage of GLOBAL sharing
+    for organizations that have already invested in broad knowledge-sharing practices — though this remains a conjecture from the model's structure rather than an empirically verified claim.
+  </p>
+
+  <h3>8.7 Cross-Cutting Summary</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Variation Range</th><th>Sensitive?</th></tr></thead>
+    <tbody>
+      <tr><td>Acquisition probability</td><td>11% incident variation</td><td>Yes — moderate</td></tr>
+      <tr><td>Assimilation probability</td><td>1.7% incident variation</td><td>No</td></tr>
+      <tr><td>Exploitation probability</td><td>0.7% incident variation</td><td>No</td></tr>
+      <tr><td>Signal decay</td><td>0% variation (NEIGHBOR)</td><td>No</td></tr>
+      <tr><td>Initial knowledge (warm start)</td><td>22% rate difference</td><td>Yes</td></tr>
+      <tr><td>Knowledge decay rate</td><td>H1 holds throughout</td><td>Moderate</td></tr>
+      <tr><td>Base incident rate</td><td>H1 holds throughout</td><td>Moderate</td></tr>
+      <tr><td>Documentation quality</td><td>H1 holds throughout</td><td>No</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Under all parameter sweeps tested, the H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) remains intact. Under the conditions modeled, the dominant sensitivity axis is information exposure — how widely incident knowledge is shared — not processing intensity or network details. This finding is robust to the parameter ranges examined here.
+  </p>
+
+<!-- END REVISION 6-8 -->

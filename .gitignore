@@ -1,0 +1,32 @@
+# ── Private advisor communications ──────────────────────────────────────────
+04-Meetings-Advisor/
+05-Meetings-Answers/
+
+# ── PDFs — copyright, do not redistribute ───────────────────────────────────
+01-Papers/Papers/
+
+# ── Raw simulation results — archive separately, too large for repo ──────────
+02-Framework-Code/thesis_results/
+
+# ── Python bytecode ──────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Mac metadata ─────────────────────────────────────────────────────────────
+.DS_Store
+
+# ── HTML backup files ────────────────────────────────────────────────────────
+*.bak
+
+# ── Virtual environments ─────────────────────────────────────────────────────
+.venv/
+venv/
+
+# ── LaTeX build artifacts ────────────────────────────────────────────────────
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
