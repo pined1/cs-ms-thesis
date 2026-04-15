@@ -1,113 +1,162 @@
 # MS Thesis: Organizational Learning from Software Incidents
 
+**David Pineda | BYU Computer Science MS**
+**Advisor: Jonathan Lunt**
+
+> Does sharing incident knowledge more broadly reduce software system failures? This thesis uses an agent-based simulation to study how sharing scope, network topology, deployment velocity, and learning effectiveness interact to determine organizational reliability.
+
+---
+
 ## Project Structure
 
 ```
 CS MS/
-├── 01-Papers/              # Reference papers
-├── 02-Framework-Code/      # Simulation code
-├── 04-Meetings-Advisor/    # Advisor meeting notes
-├── 05-Meetings-Answers/    # Q&A notes
-└── 06-Thesis-Proposal/     # Committee proposal
+├── 01-Papers/              # Paper notes and reading list (29 papers)
+├── 02-Framework-Code/      # Python ABM simulator + experiments
+├── 03-Experiments/         # Experiment documentation and results summaries
+├── 06-Thesis-Proposal/     # Four-pager committee proposal (LaTeX + PDF)
+├── 07-Defense/             # Defense presentation and committee feedback
+├── 08-Reports/             # index.html north star report + chapter outlines
+└── 09-Chapters/            # Chapter drafts (Chapter 3 sections complete)
 ```
 
-## Thesis Contributions
+---
 
-1. **A reusable simulation platform** that separates configuration from code, enabling systematic study of knowledge-sharing strategies
-2. **An operationalization of absorptive capacity** where exploitation means measurable improvements in prevention, detection, and mitigation
+## The Model
 
-## Research Questions
+20 software engineering teams arranged in a social network. Each team owns a subsystem that generates incidents stochastically. When an incident occurs, a postmortem is written. The simulation tests four strategies for who reads it.
 
-1. How can we model teams learning from incidents in a simulation?
-2. How do different knowledge-sharing strategies affect reliability over time?
+### Four Sharing Scenarios
 
-## Core Framework
+| Scenario | Who learns from each incident |
+|---|---|
+| **NONE** | Nobody — baseline floor |
+| **LOCAL** | Only the team that experienced it |
+| **NEIGHBOR** | Source team + all direct network neighbors |
+| **GLOBAL** | Every team in the organization |
 
-### Four-Stage Absorptive Capacity (Zahra & George 2002)
+### Four-Stage Absorptive Capacity Pipeline (Zahra & George 2002)
 
-1. **Acquisition** - Team becomes aware of the incident
-2. **Assimilation** - Team understands the root cause
-3. **Transformation** - Team connects new knowledge to existing understanding
-4. **Exploitation** - Team implements changes that improve capabilities
+| Stage | Question | Gate |
+|---|---|---|
+| 1. Acquisition | Does the team see the postmortem? | `P_acquire × signal_decay^hops` |
+| 2. Assimilation | Does the team understand it? | `P_assimilate = 0.70` |
+| 3. Transformation | Does the team connect it to their own systems? | Cosine similarity threshold |
+| 4. Exploitation | Does the team change behavior? | `P_exploit = 0.60` |
 
-### Three Knowledge Dimensions
+### Four Hypotheses
 
-- **Prevention** - Reduces probability of similar incidents
-- **Detection** - Reduces Mean Time to Detect (MTTD)
-- **Mitigation** - Reduces severity and time to recovery
-
-### Four Knowledge-Sharing Scenarios
-
-- **NONE** - Teams do not learn (baseline)
-- **LOCAL** - Teams learn only from their own incidents
-- **NEIGHBOR** - Teams also learn from adjacent teams
-- **GLOBAL** - All teams learn from every incident
-
-## Testable Hypotheses
-
-- **H1:** Broader knowledge sharing improves reliability (GLOBAL > NEIGHBOR > LOCAL > NONE)
-- **H2:** Higher deployment rates increase incident frequency
-- **H3:** Stronger learning effectiveness improves reliability faster
-- **H4:** Denser organizational networks spread knowledge more quickly
+| | Hypothesis | Result |
+|---|---|---|
+| **H1** | Broader sharing → fewer incidents (GLOBAL > NEIGHBOR > LOCAL > NONE) | ✅ Confirmed — 45% reduction, Cohen's d = 11.51 |
+| **H2** | Higher deployment rate → more incidents | ✅ Confirmed — but sublinear under GLOBAL (10× deploy = only 24% more incidents) |
+| **H3** | Higher exploitation effectiveness → fewer incidents, diminishing returns | ✅ Confirmed — ~4% at realistic values vs. 45% for H1 |
+| **H4** | Denser network topology → fewer incidents | ✅ Confirmed — topology alone accounts for 40% variance |
 
 ---
 
-## Papers
+## Key Results
 
-### Core Citations (in proposal)
-
-| Paper | Authors | Role |
-|-------|---------|------|
-| Cohen & Levinthal (1990) | Cohen & Levinthal | Absorptive capacity foundation |
-| Zahra & George (2002) | Zahra & George | 4-stage absorptive capacity |
-| March (1991) | March | Exploration vs exploitation |
-| Cook (1998) | Cook | How complex systems fail |
-| Dekker (2014) | Dekker | Psychology of investigation |
-| Drupsteen (2014) | Drupsteen & Guldenmund | Learning from incidents definition |
-| Lunney & Lueder (2016) | Google SRE | Postmortem practices |
-| Allspaw (2012) | Etsy | Blameless postmortems |
-| Reed (2019) | J.P. Reed | Post-incident artifacts |
-| Argote et al. (2021) | Argote, Lee, Park | Org learning review |
-| Margaryan (2017) | Margaryan et al. | LFI research agenda |
-| Dogga et al. (2023) | Microsoft Azure | ARTS incident taxonomy |
-| Harrison (2007) | Harrison et al. | Simulation methodology |
-| Nooteboom (2007) | Nooteboom et al. | Cognitive distance |
-| Conway (1968) | Conway | Conway's Law |
-
-### Methodology Citations (need to download)
-
-| Citation | What It Is | Where to Get |
-|----------|------------|--------------|
-| Yin (2018) | Case study methodology book | [SAGE Publications](https://us.sagepub.com/en-us/nam/case-study-research-and-applications/book250150) ISBN: 978-1506336169 |
-| Edmondson (1999) | Psychological safety in teams | [JSTOR](https://www.jstor.org/stable/2666999) |
-| Dingsøyr (2005) | Postmortem reviews in software | [ScienceDirect](https://www.sciencedirect.com/science/article/abs/pii/S0950584904001296) |
+- **GLOBAL vs. NONE:** 45% fewer incidents, Cohen's d = 11.51 (p < 0.001)
+- **Topology range:** Complete (273) → Star (382) — 40% difference, identical agents
+- **H1 ordering holds** across all 13 experiments, 6 sensitivity sweeps, 2 ablation tests
+- **Stage 3 (Transformation) is the bottleneck**, not Stage 4 (Exploitation)
 
 ---
 
-## 4-Month Timeline
-
-| Month | Focus |
-|-------|-------|
-| **Month 1** | Run full experiments, generate figures, start results chapter |
-| **Month 2** | Complete results analysis, validation work |
-| **Month 3** | Write full thesis draft, get advisor feedback |
-| **Month 4** | Revisions, defense prep, buffer time |
-
----
-
-## Quick Commands
+## Quick Start
 
 ```bash
-# Run simulation tests
+# Run tests
 cd 02-Framework-Code && make test
 
-# Run experiments
+# Run H1 experiment
 cd 02-Framework-Code && python3 run_experiments.py
 
-# Compile proposal
-cd 06-Thesis-Proposal && pdflatex FOUR_PAGER_PROPOSAL.tex && bibtex FOUR_PAGER_PROPOSAL && pdflatex FOUR_PAGER_PROPOSAL.tex && pdflatex FOUR_PAGER_PROPOSAL.tex
+# Run sensitivity sweeps
+cd 02-Framework-Code && python3 sensitivity_sweep.py
+
+# Run publication-level validation tests
+cd 02-Framework-Code && python3 publication_tests.py
 ```
 
 ---
 
-**Last Updated:** February 2026
+## Bibliography (29 papers)
+
+### Absorptive Capacity & Organizational Learning
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 1 | Cohen & Levinthal (1990) | Absorptive capacity foundation — prior knowledge enables new knowledge |
+| 2 | Zahra & George (2002) | 4-stage ACAP pipeline — core theory of this thesis |
+| 3 | March (1991) | Exploration vs. exploitation tradeoff |
+| 4 | Argote et al. (2021) | Org learning processes and outcomes review |
+| 5 | Nooteboom et al. (2007) | Cognitive distance and absorptive capacity |
+| 6 | Szulanski (1996) | Internal stickiness — why knowledge transfer fails within firms |
+
+### Learning from Incidents
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 7 | Cook (1998) | How complex systems fail — no single root cause |
+| 8 | Lunney & Lueder (2016) | Postmortem culture — Google SRE chapter |
+| 9 | Allspaw (2012) | Blameless postmortems at Etsy |
+| 10 | Dogga et al. (2023) | AutoARTS incident taxonomy at Microsoft Azure scale |
+| 11 | Drupsteen & Guldenmund (2014) | What learning from incidents actually means |
+| 12 | Margaryan et al. (2017) | Research agenda for learning from incidents |
+| 13 | Reed (2019) | The fix-it treadmill problem in software |
+| 14 | Dingsøyr (2005) | Postmortem reviews in software engineering |
+| 15 | Dekker (2014) | Human error is systemic, not individual |
+
+### Network Structure
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 16 | Watts & Strogatz (1998) | Small-world networks — WS topology used as default |
+| 17 | Barabási & Albert (1999) | Scale-free networks — BA topology, ba_m crossover finding |
+| 18 | Conway (1968) | Org structure mirrors system structure |
+| 19 | MacCormack et al. (2012) | Empirical test of the mirroring hypothesis |
+| 20 | Hansen (1999) | Weak ties and cross-unit knowledge sharing |
+| 21 | Reagans & McEvily (2003) | Network cohesion and range both facilitate knowledge transfer |
+
+### Knowledge Transfer & Decay
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 22 | Darr, Argote & Epple (1995) | Knowledge decay in service organizations — grounds decay_rate parameter |
+| 23 | Edmondson (1999) | Psychological safety — justifies blameless sharing assumption |
+
+### DevOps & Software Reliability
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 24 | Forsgren et al. (2018) | DORA research — deployment frequency vs. change failure rate |
+| 25 | Kim et al. (2016) | The DevOps Handbook — Three Ways, local-to-global learning |
+
+### Agent-Based Modeling Methodology
+
+| # | Paper | Key Contribution |
+|---|---|---|
+| 26 | Bonabeau (2002) | ABM methods for simulating human systems |
+| 27 | Epstein (1999) | Generative social science — "if you didn't grow it, you didn't explain it" |
+| 28 | Harrison et al. (2007) | ABM in org/management research |
+| 29 | Sargent (2020) | Verification and validation of simulation models |
+| 30 | Grimm et al. (2020) | ODD protocol — standard for documenting ABMs |
+
+---
+
+## Status
+
+| Item | Status |
+|---|---|
+| Simulation code | ✅ Complete |
+| All 13 experiments | ✅ Complete |
+| Publication-level validation | ✅ Complete |
+| HTML report (index.html) | ✅ Updated per Apr 14 advisor feedback |
+| Chapter 3 section drafts | ✅ All 8 sections drafted |
+| Chapter 3 final prose | 🔄 In progress |
+| Chapter 4 | ⬜ Not started |
+| Chapters 1, 2, 5, 6 | ⬜ Not started |
+
+**Last Updated:** April 14, 2026
