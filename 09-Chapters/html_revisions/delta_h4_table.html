@@ -1,0 +1,63 @@
+<!-- DELTA: H4 table — insert after <h2 id="h4-topology"> tag, before <h3>5.1 The Question -->
+<div style="margin: 0.5em 0 2em 0;">
+  <table style="border-collapse: collapse; width: 100%; font-size: 0.95em;">
+    <caption style="text-align: left; font-weight: normal; margin-bottom: 0.5em; padding-bottom: 0.4em;">
+      <strong>What H4 Tests:</strong> Does org structure shape reliability independently of learning behavior?
+      Network topology is the only variable. NEIGHBOR sharing is used because it is the only condition
+      where topology determines knowledge flow.
+    </caption>
+    <thead>
+      <tr style="background: #f5f5f5;">
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Parameter</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H1 (Baseline)</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H4 Experiment</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Sharing scenario</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">All 4 swept</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">NEIGHBOR only</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Deployment rate</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Prevention effect</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr style="background: #fffde7;">
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Network topology</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Watts-Strogatz (ws_k=4)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Complete / Erdős-Rényi / WS / Barabási-Albert / Star</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px; color: #e65100; font-weight: bold;">← THIS CHANGES</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Seeds per condition</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Simulation duration</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.9em; color: #555; margin-top: 0.4em;">
+    <strong>Why NEIGHBOR only?</strong>
+    Under LOCAL, topology is irrelevant (no knowledge travels).
+    Under GLOBAL, topology is irrelevant (everyone gets it directly).
+    Only NEIGHBOR makes topology matter — knowledge travels through network edges.
+  </p>
+</div>
+<!-- END DELTA H4 -->

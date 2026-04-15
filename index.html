@@ -189,20 +189,38 @@
     particularly useful for studying questions where the answer cannot be predicted from the rules alone.
   </p>
 
-  <div class="finding-box">
-    <strong>Source Asymmetry</strong>
-    <p>
-      When an incident occurs on Team A, Team A is deliberately skipped from stages 2–4 of the learning pipeline. The
-      rationale is straightforward: Team A already learned from living through the incident. Routing them through the
-      standard acquisition-assimilation-application pipeline would double-count their learning and inflate their knowledge
-      score artificially. This is a design decision, not a bug.
-    </p>
-    <p>
-      This asymmetry also explains one of the study's more counterintuitive results: under LOCAL sharing, the transformation
-      rate is 0%. LOCAL means only the source team knows about the incident — and the source team is the one team excluded
-      from the pipeline. There is no recipient left to transform the postmortem into applied knowledge.
-    </p>
-  </div>
+<div class="finding-box">
+  <strong>Source Asymmetry and the Pipeline Delay</strong>
+  <p>
+    When an incident occurs on Team A, Team A is deliberately skipped from stages 2–4 of the learning pipeline. The
+    rationale is straightforward: Team A already learned from living through the incident. Routing them through the
+    standard acquisition-assimilation-application pipeline would double-count their learning and inflate their knowledge
+    score artificially. This is a design decision, not a bug.
+  </p>
+  <p>
+    The flip side of this asymmetry is equally important: the source team's learning is <em>immediate</em>. They
+    experienced the incident in real time, and their knowledge is updated on the same day it occurred. Every other
+    team that learns from the postmortem must pass through all four pipeline stages before their behavior changes —
+    and that takes time. This pipeline delay is intentional: it models the real organizational gap between "an incident
+    happened somewhere in the org" and "our team has actually changed how we work because of it." Reading a postmortem
+    is not the same as internalizing and applying it, and the four-stage pipeline enforces that distinction at every
+    step.
+  </p>
+  <p>
+    The delay compounds with network distance. Under NEIGHBOR sharing, a team that is 2 hops from the source faces
+    two compounding disadvantages: a lower acquisition probability (because signal decays with each hop) and the same
+    full four-stage pipeline once they do acquire the postmortem. A team that is farther away is therefore both less
+    likely to receive the knowledge and slower to act on it once received. This is not a model limitation — it is a
+    structural feature that reflects how knowledge actually travels through hierarchical or loosely-connected
+    organizations.
+  </p>
+  <p>
+    This asymmetry also explains one of the study's more counterintuitive results: under LOCAL sharing, the transformation
+    rate is 0%. LOCAL means only the source team knows about the incident — and the source team is the one team excluded
+    from the pipeline. There is no recipient left to transform the postmortem into applied knowledge.
+  </p>
+</div>
+
 
   <p>
     One key mechanism governs how knowledge travels under NEIGHBOR conditions: signal decay. Each hop an incident postmortem
@@ -270,6 +288,16 @@
     Does the team actually change its behavior to reduce future incidents? This is the stage at which reliability outcomes
     are measured. A team that fully exploits an incident's lesson lowers the base incident rate for the relevant subsystems.
   </p>
+
+
+<p>
+  Taken together, the four stage probabilities define the organization's <strong>learning velocity</strong> —
+  how fast incident knowledge travels from postmortem to behavioral change. A team with high acquisition
+  probability but low transformation probability acquires many postmortems but converts few into structural
+  improvements. An organization's overall learning velocity is the product of all four stage rates, which is
+  why sharing scope (which determines who even enters Stage 1) dominates the other parameters: a team that
+  never acquires a postmortem cannot benefit from high assimilation or exploitation rates.
+</p>
 
   <table style="border-collapse: collapse; width: 100%; margin: 1.5em 0; font-size: 0.92em;">
     <caption style="text-align: left; font-weight: bold; margin-bottom: 0.4em; color: #333;">
@@ -600,7 +628,59 @@
 
   <h2 id="h1-learning-strategy">2. H1 — Learning Strategy Comparison</h2>
 
-  <h3>2.1 The Central Question</h3>
+<div style="margin: 0.5em 0 2em 0;">
+  <p><strong>What H1 Tests:</strong> Sharing scenario is the independent variable. All other parameters hold at base values.</p>
+  <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
+    <thead>
+      <tr style="background:#f2f2f2;">
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Parameter</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Base Model Default</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">H1 Experiment</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fffde7;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Sharing scenario</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Single fixed value</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">NONE / LOCAL / NEIGHBOR / GLOBAL — all four swept</td>
+        <td style="padding:6px 10px; border:1px solid #ccc; font-weight:bold; color:#e67e22;">← VARIES</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Deployment rate</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Prevention effect (P_exploit multiplier)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Network topology</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Seeds per condition</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Simulation duration</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.1 The Central Question</h3>
   <p>
     Does sharing incident knowledge more broadly reduce system failures? H1 states:
     GLOBAL &gt; NEIGHBOR &gt; LOCAL &gt; NONE, where "greater" means fewer incidents and
@@ -613,6 +693,14 @@
     it would indicate a model implementation error. Confirming this ordering is the primary
     purpose of this experiment.
   </p>
+
+  <div class="finding-box">
+    <strong>Intuition:</strong> The more teams that see an incident postmortem, the more teams enter the
+    4-stage learning pipeline. More teams in the pipeline means more teams eventually reach Stage 4
+    (Exploitation) and lower their incident rates. GLOBAL should produce the fewest incidents simply
+    because it maximizes the number of pipeline entries per incident. If this ordering does not hold,
+    the pipeline implementation is broken.
+  </div>
 
   <h3>2.2 A Real-World Analogy: The Postmortem Sharing Decision</h3>
   <p>
@@ -637,10 +725,11 @@
     My simulation follows this same logic, using the organization as the primary unit of
     measurement. The core mechanism is agent-level knowledge accumulation, which directly reduces
     the probability of future incidents. By adjusting the dissemination boundaries, I can test how
-    different sharing scopes impact the organization's overall reliability.
+    different sharing scopes impact the organization's overall reliability. Without broad sharing,
+    teams keep repeating the same mistakes that neighboring teams have already solved.
   </p>
 
-  <h3>2.3 The Four Scenarios</h3>
+    <h3>2.3 The Four Scenarios</h3>
   <table>
     <thead><tr><th>Scenario</th><th>Who Learns After an Incident</th></tr></thead>
     <tbody>
@@ -884,6 +973,60 @@
 
   <h2 id="h2-deployment">3. H2 — Deployment Velocity and Incident Risk</h2>
 
+<div style="margin: 0.5em 0 2em 0;">
+  <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
+    <caption style="text-align:left; margin-bottom:0.5em; font-size:0.9em; color:#444;">
+      <strong>What H2 Tests:</strong> Deployment rate is swept across 5 values. H1's sharing scenario sweep is held to GLOBAL vs LOCAL to isolate the deployment effect.
+    </caption>
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Parameter</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H1 (Baseline)</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H2 Experiment</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Sharing scenario</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">All 4 swept</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">GLOBAL and LOCAL only</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr style="background:#fffde7;">
+        <td style="padding:8px 12px; border:1px solid #ddd;">Deployment rate</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.05 → 0.10 → 0.20 → 0.30 → 0.50 swept</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold; color:#e67e22;">← THIS CHANGES</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Prevention effect</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Network topology</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Seeds per condition</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Simulation duration</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
   <h3>3.1 The Question</h3>
   <p>
     The question posed: does deploying software updates more frequently cause more incidents? The DevOps research
@@ -893,6 +1036,14 @@
   <p>
     H2 is confirmed if higher deployment rates produce more incidents, and if this effect is smaller under GLOBAL sharing than under LOCAL. A flat relationship between deployment rate and incident count would suggest the model is not capturing deployment risk correctly.
   </p>
+
+<!-- ============================================================ -->
+<div class="finding-box">
+  <strong>Intuition:</strong> More deployments = more chances to introduce a regression.
+  Incident rate should rise with deployment frequency. However, under GLOBAL sharing,
+  accumulated knowledge suppresses baseline risk — so the same deployment may produce
+  fewer incidents than expected. The question is whether learning can outpace deployment risk.
+</div>
 
   <h3>3.2 A Real-World Analogy: Two Engineering Teams and Their Deploy Cadence</h3>
   <p>
@@ -1090,6 +1241,69 @@
     on postmortem action items — better tooling, accountability processes, dedicated time — does that produce
     proportional reliability gains?
   </p>
+
+<div style="margin: 0.5em 0 2em 0;">
+  <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
+    <caption style="text-align:left; margin-bottom:0.5em; font-size:0.9em; color:#444;">
+      <strong>What H3 Tests:</strong> How much does exploitation effectiveness matter? Prevention_effect is swept from 0 (knowledge has no effect) to 0.50 (strong effect). Seeds raised to 500 to detect the expected small, curved effect.
+    </caption>
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Parameter</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H1 (Baseline)</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H3 Experiment</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Sharing scenario</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">All 4 swept</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">GLOBAL only</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Deployment rate</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr style="background:#fffde7;">
+        <td style="padding:8px 12px; border:1px solid #ddd;">Prevention effect</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.0 → 0.50 swept (7 values)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold; color:#e67e22;">← THIS CHANGES</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Network topology</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr style="background:#fff8e1;">
+        <td style="padding:8px 12px; border:1px solid #ddd;">Seeds per condition</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">500</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; font-size:0.88em; color:#b8860b;">↑ increased for power</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Simulation duration</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<div class="finding-box">
+  <strong>Intuition:</strong> Getting better at applying knowledge (Stage 4) should reduce incidents.
+  But Stage 4 can only fire on knowledge that already reached the team — meaning Stage 1
+  (acquisition) sets the ceiling. Improving exploitation cannot compensate for knowledge
+  that was never shared in the first place. We expect diminishing returns, and we expect
+  the absolute effect to be smaller than H1.
+</div>
 
   <h3>The Question</h3>
   <p>
@@ -1373,6 +1587,68 @@
 
   <h2 id="h4-topology">5. H4 — Network Topology and the Spread of Incident Knowledge</h2>
 
+<div style="margin: 0.5em 0 2em 0;">
+  <table style="border-collapse: collapse; width: 100%; font-size: 0.95em;">
+    <caption style="text-align: left; font-weight: normal; margin-bottom: 0.5em; padding-bottom: 0.4em;">
+      <strong>What H4 Tests:</strong> Does org structure shape reliability independently of learning behavior?
+      Network topology is the only variable. NEIGHBOR sharing is used because it is the only condition
+      where topology determines knowledge flow.
+    </caption>
+    <thead>
+      <tr style="background: #f5f5f5;">
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Parameter</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H1 (Baseline)</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H4 Experiment</th>
+        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Sharing scenario</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">All 4 swept</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">NEIGHBOR only</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Deployment rate</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Prevention effect</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr style="background: #fffde7;">
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Network topology</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Watts-Strogatz (ws_k=4)</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Complete / Erdős-Rényi / WS / Barabási-Albert / Star</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px; color: #e65100; font-weight: bold;">← THIS CHANGES</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Seeds per condition</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">Simulation duration</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.9em; color: #555; margin-top: 0.4em;">
+    <strong>Why NEIGHBOR only?</strong>
+    Under LOCAL, topology is irrelevant (no knowledge travels).
+    Under GLOBAL, topology is irrelevant (everyone gets it directly).
+    Only NEIGHBOR makes topology matter — knowledge travels through network edges.
+  </p>
+</div>
+
   <h3>5.1 The Question</h3>
   <p>
     Does the shape of how teams are connected affect how well incident knowledge spreads? H4 investigates
@@ -1380,9 +1656,22 @@
   </p>
 
 
+DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="finding-box">
+  <strong>Intuition:</strong> In a hub-spoke org (star topology), peripheral teams are 2 hops
+  from each other — signal decays twice before arriving. In a distributed org (complete or WS),
+  most teams are 1 hop apart — signal arrives at full strength. The same pipeline, same learning
+  parameters, same incident rate — but the organizational wiring determines how much knowledge
+  actually reaches each team. We expect more connected topologies to produce fewer incidents,
+  and star topology to perform worst.
+</div>
+
   <h3>5.2 Why Topology Matters: Signal Decay</h3>
   <p>
     Signal decay was introduced in Section 1.3. Here we examine how it interacts with topology.
+    The key interaction is simple: denser, more distributed topologies minimize average path length,
+    which minimizes signal decay, which maximizes Stage 1 acquisition probability across the organization.
     As introduced in Section 1.3, acquisition probability degrades with each network hop under NEIGHBOR conditions:
   </p>
   <pre class="formula">p_acquire = acquisition_prob × signal_decay ^ path_length</pre>
@@ -1594,24 +1883,31 @@
   <h2 id="ablations-exp11-exp12">6. Ablation Tests — exp11 (Knowledge Decay) &amp; exp12 (Source Asymmetry)</h2>
 
   <h3>6.1 What Is an Ablation Test?</h3>
-  <p>
-    A simulation model is built such that some components may be load-bearing: remove them, and the model's behavior
-    changes in important ways. Others are robust: when removed, the results barely shift. An ablation test is how we tell the difference.
-    The procedure is to disable one model component, re-run the full experiment under identical conditions, and compare the output to the default.
-  </p>
-  <p>
-    Experiments 11 and 12 each target a different component of the H1 learning model. Both were run under
-    the same conditions as the primary H1 experiment: 20 teams, Watts-Strogatz small-world network, 365
-    simulated days, 100 independent random seeds, all four scenarios.
-  </p>
-  <p>
-    The H1 ordering being preserved across ablations is the key test — if removing decay or source asymmetry caused the ordering to collapse, that would indicate H1 results were an artifact of those specific components rather than a fundamental property of sharing scope.
-  </p>
-  <p>
-    The key diagnostic: if the H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) survives both ablations, the result is robust to those specific modeling assumptions. If the ordering collapses, H1 would need to be re-examined.
-  </p>
+<p>
+  In simulation and machine learning research, an <em>ablation test</em> is the standard methodology for isolating the
+  contribution of individual model components: disable one component, re-run the full experiment under otherwise
+  identical conditions, and measure what changes (Sargent 2020). Components that are load-bearing will produce
+  meaningful shifts in output when removed; components that are incidental will leave the results largely intact.
+  This section applies that methodology to two specific mechanisms in the H1 agent-based model — knowledge decay
+  and source asymmetry — to determine whether the H1 ordering result is a genuine property of the sharing-scope
+  architecture or an artifact of those auxiliary design choices.
+</p>
+<p>
+  The component being ablated in each experiment targets a distinct part of the agent learning pipeline.
+  <strong>Knowledge decay</strong> (exp11) is a forgetting mechanism: by default, an agent's accumulated prevention
+  knowledge erodes exponentially over time (decay rate = 0.001 per timestep), modeling staff turnover and
+  practice atrophy. <strong>Source asymmetry</strong> (exp12) is a routing rule: when an incident occurs at
+  Team A, Team A is excluded from stages 2–4 of the post-incident learning pipeline, on the premise that the
+  source team already holds first-hand knowledge of the event. The diagnostic question for both ablations is
+  the same: does the H1 ordering — NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL in cumulative incidents — emerge
+  from the sharing-scope mechanism itself, or does it depend on one of these auxiliary components to hold?
+  If removing decay collapses the ordering, decay is load-bearing. If the ordering survives, sharing scope
+  alone is sufficient to produce it. Both experiments were run under the same conditions as the primary H1
+  experiment: 20 teams, Watts-Strogatz small-world network, 365 simulated days, 100 independent random seeds,
+  all four scenarios.
+</p>
 
-  <h3>6.2 exp11 — Removing Knowledge Decay</h3>
+    <h3>6.2 exp11 — Removing Knowledge Decay</h3>
   <p>
     The default simulation treats prevention knowledge as impermanent. Knowledge earned by a team on day 10 can slowly erode by day 200
     if it is not reinforced, following an exponential decay function (decay rate = 0.001 per timestep). This models engineers leaving teams,

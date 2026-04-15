@@ -1,0 +1,55 @@
+<!-- DELTA: H2 table — insert after <h2 id="h2-deployment"> tag, before <h3>3.1 -->
+<div style="margin: 0.5em 0 2em 0;">
+  <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
+    <caption style="text-align:left; margin-bottom:0.5em; font-size:0.9em; color:#444;">
+      <strong>What H2 Tests:</strong> Deployment rate is swept across 5 values. H1's sharing scenario sweep is held to GLOBAL vs LOCAL to isolate the deployment effect.
+    </caption>
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Parameter</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H1 (Baseline)</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H2 Experiment</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Sharing scenario</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">All 4 swept</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">GLOBAL and LOCAL only</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr style="background:#fffde7;">
+        <td style="padding:8px 12px; border:1px solid #ddd;">Deployment rate</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.05 → 0.10 → 0.20 → 0.30 → 0.50 swept</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold; color:#e67e22;">← THIS CHANGES</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Prevention effect</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Network topology</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Seeds per condition</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 12px; border:1px solid #ddd;">Simulation duration</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- END DELTA H2 -->
