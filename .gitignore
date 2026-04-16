@@ -33,3 +33,7 @@ venv/
 *.log
 *.out
 *.synctex.gz
+*build.py
+*sections
+*figures
+*template
