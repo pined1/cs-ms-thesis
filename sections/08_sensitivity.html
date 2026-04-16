@@ -1,0 +1,182 @@
+<!-- SECTION: Section 8 — Sensitivity Sweeps | Edit this file, then run: python3 build.py to rebuild index.html -->
+  <hr class="section-rule">
+  <h2 id="sensitivity-sweeps">8. Sensitivity Sweeps — Which Model Knobs Matter?</h2>
+
+  <h3>8.1 Sensitivity Sweeps vs. Ablation Studies</h3>
+  <p>
+    An ablation study removes a component entirely to test whether it contributes at all. A sensitivity sweep
+    keeps the component active but varies its numeric value across a wide range, asking whether the findings
+    would change if the model had been calibrated differently.
+  </p>
+
+  <h3>8.2 Sweep 1 — Acquisition Probability (Stage 1 Gate)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team reads and registers a postmortem that
+    has been shared into their knowledge pool. Default: 0.9. Range tested: 0.3, 0.5, 0.7, 0.9, 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Acquisition Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.9)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.3 (low)</td><td>373.9</td><td>+43.9</td><td>Significant degradation</td></tr>
+      <tr><td>0.5</td><td>336.0</td><td>+6.0</td><td>Near-default performance</td></tr>
+      <tr><td>0.7</td><td>330.1</td><td>+0.1</td><td>Negligible difference</td></tr>
+      <tr><td><strong>0.9 (default)</strong></td><td><strong>330.0</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>1.0 (perfect)</td><td>324.0</td><td>−6.0</td><td>Minor gain</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The span of ~43 incidents (~11% variation) makes this <strong>moderately sensitive</strong>. The critical
+    threshold appears between 0.3 and 0.5: below 0.5, teams miss enough postmortems that incident counts rise
+    sharply (~39 additional incidents). Above 0.5, the daily retry mechanism compensates and raising the
+    rate further yields diminishing returns — moving from 0.9 to perfect (1.0) saves only 6 more incidents.
+    H1 ordering holds across the full range tested.
+  </p>
+
+  <h3>8.3 Sweep 2 — Assimilation Probability (Stage 2)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team deeply understands an acquired
+    postmortem. Default: 0.7. Range tested: 0.1 through 1.0 in increments of 0.1.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Assimilation Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.7)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.1 (very low)</td><td>339</td><td>+3</td><td>Within noise band</td></tr>
+      <tr><td>0.3</td><td>338</td><td>+2</td><td>Within noise band</td></tr>
+      <tr><td>0.5</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td><strong>0.7 (default)</strong></td><td><strong>336</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>0.9</td><td>334</td><td>−2</td><td>Within noise band</td></tr>
+      <tr><td>1.0 (perfect)</td><td>333</td><td>−3</td><td>Within noise band</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Only 6 incidents of total spread across a 10× range, with all confidence intervals overlapping.
+    <strong>Not sensitive.</strong> The daily retry mechanism explains this: a team that fails to assimilate
+    on day 1 tries again on day 2, and every subsequent day until it succeeds. Over 365 days, even a 10%
+    per-day probability guarantees eventual success for nearly every postmortem. Time absorbs the delay.
+  </p>
+
+  <h3>8.4 Sweep 3 — Exploitation Probability (Stage 4)</h3>
+  <p>
+    <strong>What it is:</strong> The per-day probability that a team implements a concrete prevention action
+    after transforming a postmortem's lesson. Default: 0.6. Range tested: 0.1 through 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Exploitation Probability</th>
+        <th>Mean Incidents</th>
+        <th>Change from Default (0.6)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.1 (very low)</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td>0.3</td><td>337</td><td>+1</td><td>Within noise band</td></tr>
+      <tr><td><strong>0.6 (default)</strong></td><td><strong>336</strong></td><td>—</td><td>Baseline</td></tr>
+      <tr><td>0.8</td><td>335</td><td>−1</td><td>Within noise band</td></tr>
+      <tr><td>1.0 (perfect)</td><td>334</td><td>−2</td><td>Within noise band</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Only 3 incidents of total spread — 0.7% variation. <strong>Not sensitive.</strong> Stage 3
+    (transformation, gated by cosine similarity) is the true bottleneck: teams that cannot connect an
+    incoming postmortem to their own systems never reach Stage 4 regardless of how willing they are to act.
+    Raising exploitation probability has negligible effect when the pipeline is blocked upstream. This directly
+    corroborates H3 — the bottleneck in this model is recognition capacity, not execution willingness.
+  </p>
+
+  <h3>8.5 Sweep 4 — Signal Decay</h3>
+  <p>
+    <strong>What it is:</strong> A per-hop multiplier applied to acquisition probability along multi-hop
+    sharing paths. Formula: p_acquire = acquisition_prob &times; signal_decay<sup>path_length</sup>. Default: 0.8. Range tested: 0.3 through 1.0.
+  </p>
+  <table>
+    <thead>
+      <tr>
+        <th>Signal Decay Rate</th>
+        <th>Effective p at 1 hop</th>
+        <th>Effective p at 2 hops</th>
+        <th>Mean Incidents (NEIGHBOR)</th>
+        <th>Verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0.3 (severe)</td><td>0.27</td><td>0.08</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td>0.5</td><td>0.45</td><td>0.23</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td><strong>0.8 (default)</strong></td><td><strong>0.72</strong></td><td><strong>0.58</strong></td><td><strong>336.0</strong></td><td>Baseline</td></tr>
+      <tr><td>0.9</td><td>0.81</td><td>0.73</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+      <tr><td>1.0 (no decay)</td><td>0.90</td><td>0.90</td><td>336.0</td><td>No change — 1-hop only</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Zero variation across the full range. <strong>Behaviorally dormant under NEIGHBOR</strong>: in this
+    configuration, all learning teams are exactly one hop from the incident source, so decay<sup>1</sup> is
+    just a flat multiplier that Stage 1's retry mechanism compensates for over time. The parameter becomes
+    consequential in sparse-network or multi-hop global configurations — it is designed for those cases, not
+    vestigial.
+  </p>
+
+  <h3>8.6 Sweep 5 — Initial Knowledge State (Cold vs. Warm Start)</h3>
+  <p>
+    <strong>What it is:</strong> The default initializes all teams with zero prior knowledge (cold start).
+    This sweep tests whether pre-existing organizational knowledge changes the findings.
+  </p>
+  <table>
+    <thead><tr><th>Condition</th><th>Rate-Adjusted Incidents/Day</th></tr></thead>
+    <tbody>
+      <tr><td>Cold NEIGHBOR</td><td>0.920</td></tr>
+      <tr><td>Warm GLOBAL → NEIGHBOR</td><td>0.718</td></tr>
+      <tr><td>Warm LOCAL → LOCAL</td><td>1.091</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The warm GLOBAL start produced a <strong>22% improvement</strong> in daily incident rate relative to the
+    cold NEIGHBOR baseline. The warm LOCAL start performed <em>worse</em> than the cold baseline — teams
+    accumulated narrow, domain-specific knowledge that does not transfer well across subsystems. The LOCAL warm start illustrates how
+    a history of siloed learning can create the <em>appearance</em> of preparation without cross-domain breadth.
+  </p>
+  <p>
+    <strong>Implication for H1:</strong> The cold start default is deliberately conservative. Mature
+    organizations with accumulated cross-team knowledge are closer to the warm GLOBAL
+    condition. The 45% incident reduction observed in H1 may understate the advantage of GLOBAL sharing
+    for organizations that have already invested in broad knowledge-sharing practices — though this remains a conjecture from the model's structure rather than an empirically verified claim.
+  </p>
+
+  <h3>8.7 Cross-Cutting Summary</h3>
+  <table>
+    <thead><tr><th>Parameter</th><th>Variation Range</th><th>Sensitive?</th></tr></thead>
+    <tbody>
+      <tr><td>Acquisition probability</td><td>11% incident variation</td><td>Yes — moderate</td></tr>
+      <tr><td>Assimilation probability</td><td>1.7% incident variation</td><td>No</td></tr>
+      <tr><td>Exploitation probability</td><td>0.7% incident variation</td><td>No</td></tr>
+      <tr><td>Signal decay</td><td>0% variation (NEIGHBOR)</td><td>No</td></tr>
+      <tr><td>Initial knowledge (warm start)</td><td>22% rate difference</td><td>Yes</td></tr>
+      <tr><td>Knowledge decay rate</td><td>H1 holds throughout</td><td>Moderate</td></tr>
+      <tr><td>Base incident rate</td><td>H1 holds throughout</td><td>Moderate</td></tr>
+      <tr><td>Documentation quality</td><td>H1 holds throughout</td><td>No</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Under all parameter sweeps tested, the H1 ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) remains intact. Under the conditions modeled, the dominant sensitivity axis is information exposure — how widely incident knowledge is shared — not processing intensity or network details. This finding is robust to the parameter ranges examined here.
+  </p>
+
+
+
+
+
+
+  <!-- ============================================================ -->

@@ -1,0 +1,346 @@
+<!-- SECTION: Section 2 — H1: Learning Strategy Comparison | Edit this file, then run: python3 build.py to rebuild index.html -->
+  <hr class="section-rule">
+
+  <h2 id="h1-learning-strategy">2. H1 — Learning Strategy Comparison</h2>
+
+<div style="margin: 0.5em 0 2em 0;">
+  <p><strong>What H1 Tests:</strong> Sharing scenario is the independent variable. All other parameters hold at base values.</p>
+  <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
+    <thead>
+      <tr style="background:#f2f2f2;">
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Parameter</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Base Model Default</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">H1 Experiment</th>
+        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background:#fffde7;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Sharing scenario</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Single fixed value</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">NONE / LOCAL / NEIGHBOR / GLOBAL — all four swept</td>
+        <td style="padding:6px 10px; border:1px solid #ccc; font-weight:bold; color:#e67e22;">← VARIES</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Deployment rate</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Prevention effect (P_exploit multiplier)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Network topology</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:6px 10px; border:1px solid #ccc;">Seeds per condition</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+      <tr>
+        <td style="padding:6px 10px; border:1px solid #ccc;">Simulation duration</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<h3>2.1 The Central Question</h3>
+  <p>
+    Does sharing incident knowledge more broadly reduce system failures? H1 states:
+    GLOBAL &gt; NEIGHBOR &gt; LOCAL &gt; NONE, where "greater" means fewer incidents and
+    higher availability. This section covers the evidence for that ordering
+    and examines how robust it is across a wide range of conditions.
+  </p>
+  <p>
+    The expected ordering is NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL in total incidents
+    (inverse ordering in knowledge accumulation). If any reversal appeared in these results,
+    it would indicate a model implementation error. Confirming this ordering is the primary
+    purpose of this experiment.
+  </p>
+
+  <div class="finding-box">
+    <strong>Intuition:</strong> The more teams that see an incident postmortem, the more teams enter the
+    4-stage learning pipeline. More teams in the pipeline means more teams eventually reach Stage 4
+    (Exploitation) and lower their incident rates. GLOBAL should produce the fewest incidents simply
+    because it maximizes the number of pipeline entries per incident. If this ordering does not hold,
+    the pipeline implementation is broken.
+  </div>
+
+  <h3>2.2 A Real-World Analogy: The Postmortem Sharing Decision</h3>
+  <p>
+    When a software organization has to handle a production outage, the on-call team has to jump in
+    now to investigate, resolve the issue, and eventually write a postmortem. That document is full
+    of critical lessons: which configuration was wrong, what monitoring was missing, and how the
+    failure cascaded through the system. The real question is what happens to those lessons once
+    the incident is over.
+  </p>
+
+  <p>
+    If the written report stays in the owning team's private Confluence page, that is local
+    learning — the knowledge is isolated to the team that lived through the failure. If the team
+    posts it in a shared Slack channel that adjacent teams in the communication network follow,
+    that is neighbor-level learning — the signal reaches teams close in the organization graph. If
+    the team that wrote the report presents their findings in a company-wide incident review
+    attended by all engineering teams, that is global learning — every team hears about it and can
+    update their own practices accordingly.
+  </p>
+
+  <p>
+    My simulation follows this same logic, using the organization as the primary unit of
+    measurement. The core mechanism is agent-level knowledge accumulation, which directly reduces
+    the probability of future incidents. By adjusting the dissemination boundaries, I can test how
+    different sharing scopes impact the organization's overall reliability. Without broad sharing,
+    teams keep repeating the same mistakes that neighboring teams have already solved.
+  </p>
+
+    <h3>2.3 The Four Scenarios</h3>
+  <table>
+    <thead><tr><th>Scenario</th><th>Who Learns After an Incident</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="scenario-none">NONE</span></td>
+        <td>Pure baseline. Incidents occur, nothing is updated.</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-local">LOCAL</span></td>
+        <td>The team that owns the affected subsystem. An on-call engineer who fixes an outage, keeps the notes in a private doc, and never shares them with anyone else.</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
+        <td>The source team which experienced the incident plus all teams directly connected to it in the network. Same as posting a postmortem in a shared Slack channel that adjacent teams follow.</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>Every team in the organization, regardless of proximity. Like a mandatory company-wide incident review where all engineering teams attend.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 Experimental Setup</h3>
+  <p>
+    The simulation models an organization of 20 teams connected via a Watts-Strogatz small-world
+    network, a topology chosen because it balances local clustering with short average path
+    lengths — a characteristic of how real engineering organizations tend to be structured:
+    tightly-knit subgroups with a few cross-cutting connections.
+  </p>
+  <p>
+    Each scenario ran for 365 simulated days across 100 independent random seeds. Running 100
+    seeds is equivalent to running the same organizational experiment in 100 parallel universes
+    with the same starting conditions, allowing a distribution of outcomes rather than a single
+    point estimate.
+  </p>
+
+  <table>
+    <caption><strong>Table 2.1: H1 Experimental Parameters</strong></caption>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Value</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Sharing scenarios tested</td>
+        <td>NONE, LOCAL, NEIGHBOR, GLOBAL</td>
+        <td>Independent variable</td>
+      </tr>
+      <tr>
+        <td>Network topology</td>
+        <td>Watts-Strogatz (ws_k=4, p=0.1)</td>
+        <td>Default; varies in H4</td>
+      </tr>
+      <tr>
+        <td>Number of teams</td>
+        <td>20</td>
+        <td>Base configuration</td>
+      </tr>
+      <tr>
+        <td>Simulation duration</td>
+        <td>365 days</td>
+        <td>Base; sensitivity tested at 180/730/1095</td>
+      </tr>
+      <tr>
+        <td>Seeds per condition</td>
+        <td>100</td>
+        <td>Produces distributions, not point estimates</td>
+      </tr>
+      <tr>
+        <td>Base incident rate</td>
+        <td>0.10 per subsystem/day</td>
+        <td>Fixed across H1</td>
+      </tr>
+      <tr>
+        <td>Deployment rate</td>
+        <td>0.10</td>
+        <td>Fixed; varies in H2</td>
+      </tr>
+      <tr>
+        <td>Prevention effect</td>
+        <td>0.10</td>
+        <td>Fixed; varies in H3</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>2.5 Core Results</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Mean Incidents</th>
+        <th>Availability</th>
+        <th>Prevention K</th>
+        <th>Transform %</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="scenario-none">NONE</span></td>
+        <td>484.3</td><td>98.29%</td><td>0.000</td><td>0.0%</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-local">LOCAL</span></td>
+        <td>406.4</td><td>98.66%</td><td>0.555</td><td>0.0%</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
+        <td>336.0</td><td>98.97%</td><td>0.890</td><td>14.0%</td>
+      </tr>
+      <tr>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>265.6</td><td>99.26%</td><td>0.992</td><td>89.5%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Here is what each column in the table above is measuring and how it was calculated:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Plain English</th>
+        <th>How It Is Calculated</th>
+        <th>What the Scale Means</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Mean Incidents</strong></td>
+        <td>How many system failures the organization experienced over one simulated year</td>
+        <td>Count every failure across all 20 teams over 365 days. Run the simulation 100 times with different random seeds. Average the results.</td>
+        <td>Lower is better. NONE = 484 failures/year. GLOBAL = 266 failures/year.</td>
+      </tr>
+      <tr>
+        <td><strong>Availability</strong></td>
+        <td>The percentage of time the system was up and working normally, from an end-user perspective</td>
+        <td>Each incident causes downtime based on how long it takes to detect and recover. Availability = 1 − (total downtime ÷ total time). Averaged across all 100 seeds.</td>
+        <td>Higher is better. The gap between 98.29% (NONE) and 99.26% (GLOBAL) equals roughly <strong>45 minutes less downtime per week per team</strong>.</td>
+      </tr>
+      <tr>
+        <td><strong>Prevention K</strong></td>
+        <td>How much incident-prevention knowledge the organization has accumulated — a measure of organizational memory</td>
+        <td>Each team holds a knowledge vector (see below). Prevention K is the average value across all dimensions of that vector, averaged across all 20 teams, at day 365.</td>
+        <td>0 = no knowledge accumulated. 1 = maximum possible knowledge. GLOBAL reaches 0.992 — near the ceiling. LOCAL reaches only 0.555.</td>
+      </tr>
+      <tr>
+        <td><strong>Transform %</strong></td>
+        <td>How often incident knowledge produced a <em>deep</em> change in how a team operates — not just absorbing information, but actually restructuring behavior</td>
+        <td>After each incident, the cosine similarity between the team's knowledge vector and the incident's feature vector is computed. If similarity exceeds the transformation threshold, a transformation event is recorded. Transform % = (transformation events ÷ total learning opportunities) × 100.</td>
+        <td>0% means teams absorbed information but never reached the threshold for structural change. 89.5% (GLOBAL) means nearly every incident produced real behavioral change across the organization.</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <h3>2.6 The Transformation Rate Jump: Source Asymmetry</h3>
+  <p>
+    The 0% transformation rate in the LOCAL scenario is due to how LOCAL accumulates knowledge. In
+    the simulation, the team that owns the affected subsystem is skipped in the post-incident
+    learning pipeline — it is assumed to have learned implicitly by experiencing the failure. Under
+    the LOCAL strategy, no other teams are in the learning pipeline, so the cross-team pipeline
+    never fires and transformation events do not occur.
+  </p>
+
+  <p>
+    The NEIGHBOR strategy introduces at least one non-source team into every learning event.
+    GLOBAL reaches 89.5% because every team in the organization received every incident's
+    knowledge; cosine similarity then rises, the transformation threshold is crossed repeatedly,
+    making structural learning the norm.
+  </p>
+
+  <h3>2.7 When Does the Ordering Emerge?</h3>
+  <p>
+    In the first 30 days of the simulation, H1 holds: the NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL
+    incident ordering is already present and statistically distinguishable.
+  </p>
+
+  <h3>2.8 Effect Sizes</h3>
+  <table>
+    <thead><tr><th>Comparison</th><th>Cohen's d</th><th>Interpretation</th></tr></thead>
+    <tbody>
+      <tr><td>NONE vs. LOCAL</td><td>4.23</td><td>Large</td></tr>
+      <tr><td>NONE vs. NEIGHBOR</td><td>7.89</td><td>Large</td></tr>
+      <tr><td>NONE vs. GLOBAL</td><td>11.51</td><td>Large</td></tr>
+      <tr><td>LOCAL vs. NEIGHBOR</td><td>3.67</td><td>Large</td></tr>
+      <tr><td>LOCAL vs. GLOBAL</td><td>7.28</td><td>Large</td></tr>
+      <tr><td>NEIGHBOR vs. GLOBAL</td><td>3.44</td><td>Large</td></tr>
+    </tbody>
+  </table>
+
+  <div class="result-highlight">
+    The NONE vs. GLOBAL effect size d = 11.51 is the most significant finding. To put this in
+    perspective: there is zero overlap between these two groups. Even the best-performing
+    simulation run where no knowledge was shared performed worse than the worst-performing run
+    where global sharing was active.
+  </div>
+
+  <h3>2.9 The Robustness of H1</h3>
+  <ul>
+    <li><strong>Team count:</strong> 6, 20, and 50 teams</li>
+    <li><strong>Simulation duration:</strong> 180 to 1,095 days</li>
+    <li><strong>Incident rate:</strong> 0.01 to 0.20 daily probability per subsystem</li>
+    <li><strong>Knowledge decay:</strong> half-lives ranging from approximately 2 weeks to 19 years</li>
+    <li><strong>Documentation quality:</strong> from poor (high noise in knowledge transfer) to high fidelity</li>
+  </ul>
+  <p>
+    The sharing model was put through a series of stress tests to see if the results would change
+    under different conditions. Everything was varied: from the size of the company to how quickly
+    people forget what they learned — scale and time (6 teams to 50, 6 months to 3 years),
+    environment (very stable to high-failure systems), and memory and quality (teams that forget
+    lessons in two weeks versus those that remember for 19 years, and from noisy documentation to
+    high-fidelity reports). The performance ordering (NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL) held
+    in all cases — it is not a fluke of the base parameter settings but a stable property of how
+    knowledge flows through the network under these model assumptions.
+  </p>
+
+  <h3>2.10 Conclusion</h3>
+  <div class="finding-box">
+    Under the conditions modeled — 20 teams, Watts-Strogatz topology, 365 simulated days, and a
+    base incident rate of 0.10 — the data support H1. The ordering NONE &gt; LOCAL &gt; NEIGHBOR &gt;
+    GLOBAL in incident counts held across all 100 seeds and was statistically separable at each
+    step (all Cohen's d &gt; 3.44, p &lt; 0.001). The 45% reduction from NONE to GLOBAL is large in
+    absolute terms, but reflects specific model assumptions about how knowledge flows and decays.
+    Whether this magnitude translates to real organizations depends on how well these assumptions
+    hold in practice — a question for empirical follow-up. What the simulation establishes is
+    that, under these assumptions, sharing scope is the dominant lever for reliability.
+  </div>
+
+
+
+
+
+
+  <!-- ============================================================ -->

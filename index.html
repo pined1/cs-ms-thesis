@@ -63,6 +63,58 @@
       white-space: pre;
     }
     .section-rule { border: none; border-top: 1px solid #e0e0e0; margin: 2em 0; }
+
+    /* ── Formula presentation blocks ─────────────────────────────── */
+    .formula-block {
+      margin: 1.5em 0;
+    }
+    .formula-block pre.formula {
+      margin-bottom: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: none;
+      font-size: 1em;
+      font-weight: 600;
+      background: #f0f4ff;
+      border-color: #90a8e8;
+    }
+    table.formula-key {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88em;
+      border: 1px solid #90a8e8;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      margin-bottom: 0.6em;
+    }
+    table.formula-key th {
+      background: #e8edfa;
+      padding: 6px 10px;
+      text-align: left;
+      border-bottom: 1px solid #90a8e8;
+      font-size: 0.88em;
+    }
+    table.formula-key td {
+      padding: 5px 10px;
+      border-bottom: 1px solid #dde3f5;
+      vertical-align: top;
+    }
+    table.formula-key tr:last-child td {
+      border-bottom: none;
+    }
+    table.formula-key td:first-child {
+      white-space: nowrap;
+      font-weight: 600;
+      width: 1%;
+    }
+    p.formula-plain {
+      margin: 0.5em 0 0;
+      font-size: 0.93em;
+      color: #444;
+      padding: 6px 10px;
+      background: #fafafa;
+      border-left: 3px solid #90a8e8;
+    }
   </style>
 </head>
 <body>
@@ -140,29 +192,15 @@
   </p>
 
   <h3>1.2 Why This Question Matters</h3>
-  <p>
-    Despite industry-wide investment in postmortem processes, the literature on how sharing scope affects reliability
-    outcomes has not been widely discussed. Organizational learning theory (Levitt &amp; March 1988; Argote 1999) holds
-    that knowledge must flow through an organization to be useful. Absorptive capacity theory (Cohen &amp; Levinthal 1990;
-    Zahra &amp; George 2002) explains that receiving knowledge is not enough — teams must also have the capacity to absorb
-    and apply it.
-  </p>
-
-  <p>
-    These two stages map onto a distinction this simulation takes seriously: <em>acquisition</em> versus
-    <em>assimilation</em>. Acquisition is the moment a team reads a postmortem and registers that it exists and is
-    relevant to them — they have seen it, logged it, flagged it as worth knowing about. That is all acquisition is. It
-    does not mean the team understands the failure deeply or knows how to act on it. That understanding is assimilation,
-    which is Stage 2 in this model and depends on the team's prior knowledge and absorptive capacity. A team can acquire
-    a postmortem without ever truly assimilating it, and this distinction matters: the simulation models each stage
-    separately because collapsing them would obscure exactly the dynamic we are trying to study.
-  </p>
-
-  <p>
-    These theories have not been tested in the specific context of software incident knowledge sharing with a formal
-    computational model. This simulation study provides that test, bridging organizational learning theory and absorptive
-    capacity theory in a setting grounded in real engineering practice.
-  </p>
+<p>
+  Despite industry-wide investment in postmortem processes, the literature on how sharing scope affects reliability
+  outcomes has not been widely discussed. Organizational learning theory (Levitt &amp; March 1988; Argote 1999) holds
+  that knowledge must flow through an organization to be useful. Absorptive capacity theory (Cohen &amp; Levinthal 1990;
+  Zahra &amp; George 2002) explains that receiving knowledge is not enough — teams must also have the capacity to absorb
+  and apply it. These theories have not been tested in the specific context of software incident knowledge sharing with a
+  formal computational model. This simulation study provides that test, bridging organizational learning theory and absorptive
+  capacity theory in a setting grounded in real engineering practice.
+</p>
 
 
 
@@ -180,6 +218,15 @@
     stay just within the team that experienced the outage, be shared with adjacent teams from their communication network, or
     broadcast across the entire engineering organization? Our model simulates exactly this decision, run 100 times over a
     simulated year, under four different sharing strategies.
+  </p>
+  <p>
+  <em>Four sharing strategies are tested: <strong><span class="scenario-none">NONE</span></strong>,
+  <strong><span class="scenario-local">LOCAL</span></strong>,
+  <strong><span class="scenario-neighbor">NEIGHBOR</span></strong>, and
+  <strong><span class="scenario-global">GLOBAL</span></strong>.
+  These terms are defined formally in Section 1.5. For now, the key idea is that teams can
+  choose how widely they share incident postmortems — from keeping knowledge entirely within
+  the team that experienced the failure, to broadcasting it across the entire organization.</em>
   </p>
 
   <p>
@@ -214,11 +261,7 @@
     structural feature that reflects how knowledge actually travels through hierarchical or loosely-connected
     organizations.
   </p>
-  <p>
-    This asymmetry also explains one of the study's more counterintuitive results: under LOCAL sharing, the transformation
-    rate is 0%. LOCAL means only the source team knows about the incident — and the source team is the one team excluded
-    from the pipeline. There is no recipient left to transform the postmortem into applied knowledge.
-  </p>
+
 </div>
 
 
@@ -226,7 +269,19 @@
     One key mechanism governs how knowledge travels under NEIGHBOR conditions: signal decay. Each hop an incident postmortem
     travels through the network reduces the acquisition probability of the receiving team:
   </p>
+  <div class="formula-block">
   <pre class="formula">p_acquire = acquisition_prob × signal_decay ^ path_length</pre>
+  <table class="formula-key">
+    <thead><tr><th>Variable</th><th>Meaning in this model</th></tr></thead>
+    <tbody>
+      <tr><td><code>p_acquire</code></td><td>Probability that the receiving team successfully acquires (Stage 1) the incident postmortem signal; the gate that must open before any learning can proceed.</td></tr>
+      <tr><td><code>acquisition_prob</code></td><td>Base probability of acquiring a postmortem when it arrives. Fixed at <strong>0.9</strong> across all experiments — reflects a well-run postmortem process that almost always reaches the intended audience when delivered.</td></tr>
+      <tr><td><code>signal_decay</code></td><td>Per-hop decay factor applied to the postmortem signal as it travels through the team network. Fixed at <strong>0.8</strong>; each intermediate relay attenuates the signal by 20%.</td></tr>
+      <tr><td><code>path_length</code></td><td>Number of network hops between the incident-owning team and the receiving team. Under GLOBAL sharing, every team is treated as <code>path_length = 1</code>; under NEIGHBOR sharing, only direct connections receive the postmortem and path length reflects actual graph distance.</td></tr>
+    </tbody>
+  </table>
+  <p class="formula-plain"><em>In plain terms:</em> The further away a team sits from the incident source in the communication network, the less likely it is to successfully pick up the postmortem — a 20% drop per hop means a team two hops away starts at only 57.6% acquisition probability even if the base rate is 90%.</p>
+</div>
   <p>
     Under GLOBAL sharing, every team is treated as <code>path_length = 1</code> regardless of their actual network position —
     the signal does not decay with distance. Under NEIGHBOR sharing, only teams that are direct connections
@@ -247,7 +302,12 @@
       <tr><td>Learning conditions</td><td>4 (NONE, LOCAL, NEIGHBOR, GLOBAL)</td></tr>
       <tr><td>Total simulation runs</td><td>400</td></tr>
       <tr><td>Incident generation</td><td>Stochastic (Poisson process per subsystem)</td></tr>
-      <tr><td>Network topology</td><td>Watts-Strogatz small-world (ws_k=4, rewire_prob=0.1)</td></tr>
+      <tr><td>Network topology</td>
+  <td>Watts-Strogatz small-world (ws_k=4, rewire_prob=0.1)
+    <br><small style="color:#555;">(A network topology where most teams cluster locally but short paths
+    connect any two teams — mimicking how real engineering organizations form tight sub-groups with a
+    few cross-cutting relationships.)</small>
+  </td></tr>
     </tbody>
   </table>
 
@@ -267,6 +327,15 @@
     Does the team receive the incident knowledge? A team that is not in the sharing scope for an incident
     never even sees the postmortem. Teams within scope receive the incident with a probability that reflects
     their current communication network.
+  </p>
+  <p>
+  This distinction — between <em>acquisition</em> and <em>assimilation</em> — is one the simulation takes
+  seriously. Acquisition is the moment a team reads a postmortem and registers that it exists and is relevant
+  to them. That is all acquisition is: they have seen it, logged it, flagged it as worth knowing about. It does
+  not mean the team understands the failure deeply or knows how to act on it. That deeper understanding is
+  assimilation (Stage 2), and it depends on the team's prior knowledge and absorptive capacity. A team can
+  acquire a postmortem without ever truly assimilating it — and the pipeline models each stage separately
+  precisely because collapsing them would obscure the dynamic we are trying to study.
   </p>
 
   <p>
@@ -291,12 +360,14 @@
 
 
 <p>
-  Taken together, the four stage probabilities define the organization's <strong>learning velocity</strong> —
-  how fast incident knowledge travels from postmortem to behavioral change. A team with high acquisition
-  probability but low transformation probability acquires many postmortems but converts few into structural
-  improvements. An organization's overall learning velocity is the product of all four stage rates, which is
-  why sharing scope (which determines who even enters Stage 1) dominates the other parameters: a team that
-  never acquires a postmortem cannot benefit from high assimilation or exploitation rates.
+  Stage 4 is the end of the pipeline — but completing it once does not mean the organization is done learning.
+  Each new incident restarts the process, and the cumulative rate at which incidents make it all the way through
+  defines the organization’s <strong>learning velocity</strong> — how fast incident knowledge travels from
+  postmortem to behavioral change. A team with high acquisition probability but low transformation probability
+  acquires many postmortems but converts few into structural improvements. An organization’s overall learning
+  velocity is the product of all four stage rates, which is why sharing scope (which determines who even enters
+  Stage 1) dominates the other parameters: a team that never acquires a postmortem cannot benefit from high
+  assimilation or exploitation rates.
 </p>
 
   <table style="border-collapse: collapse; width: 100%; margin: 1.5em 0; font-size: 0.92em;">
@@ -438,8 +509,15 @@
   <h4>What a Team Actually "Knows" — The Knowledge Vector</h4>
   <p>
     Every team in the simulation carries a <strong>knowledge vector</strong> — a 5×3 grid of 15 values,
-    one for each combination of incident type and knowledge dimension. This is the team's organizational
+    one for each combination of incident type and knowledge dimension. This is the team’s organizational
     memory: what it has learned from past incidents, either directly or through shared postmortems.
+  </p>
+  <p>
+    Each team’s Prevention Knowledge vector tracks understanding of the specific incident types that
+    have occurred in the organization. Because different teams own different subsystems with different
+    failure modes, teams enter the simulation with different baseline knowledge configurations —
+    Team A’s experience with database timeouts does not directly transfer to Team B’s experience with
+    network partitions without passing through the transformation stage.
   </p>
   <table>
     <thead>
@@ -554,6 +632,10 @@
 
   <!-- ── Section 1.5 ── -->
   <h3>1.5 The Four Sharing Conditions</h3>
+  <p>
+  These four conditions are the independent variable of this study.
+  Every experiment in this report runs the simulation once under each condition.
+  </p>
   <table>
     <thead><tr><th>Condition</th><th>Who Learns From Each Incident</th></tr></thead>
     <tbody>
@@ -605,9 +687,14 @@
 
   <h4>A Note on H3 — Why Diminishing Returns?</h4>
   <p>
-    In software reliability terms: moving a team from zero learning to some learning prevents a lot of incidents. Moving them from
-    good to excellent at applying knowledge saves only a little more, because the easy
-    wins are already gone, and the remaining risk is harder to eliminate.
+  We expect diminishing returns based on how absorptive capacity works in theory. At low exploitation
+  effectiveness, even modest improvements in how teams act on their knowledge should prevent many incidents —
+  because the easiest, most common failure modes are still unaddressed. As effectiveness increases, those
+  readily-preventable failures are already being caught, and each additional unit of effort must address
+  increasingly rare or complex failure modes. In software reliability terms: moving a team from zero learning
+  to some learning should prevent far more incidents than moving them from good to excellent, because the
+  high-frequency easy wins are gone and the remaining risk is harder to eliminate. Whether this concave
+  relationship actually appears in the simulation data is what H3 tests.
   </p>
 
   <!-- ── Section 1.7 ── -->
@@ -628,59 +715,69 @@
 
   <h2 id="h1-learning-strategy">2. H1 — Learning Strategy Comparison</h2>
 
-<div style="margin: 0.5em 0 2em 0;">
-  <p><strong>What H1 Tests:</strong> Sharing scenario is the independent variable. All other parameters hold at base values.</p>
-  <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
-    <thead>
-      <tr style="background:#f2f2f2;">
-        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Parameter</th>
-        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Base Model Default</th>
-        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">H1 Experiment</th>
-        <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr style="background:#fffde7;">
-        <td style="padding:6px 10px; border:1px solid #ccc;">Sharing scenario</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Single fixed value</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">NONE / LOCAL / NEIGHBOR / GLOBAL — all four swept</td>
-        <td style="padding:6px 10px; border:1px solid #ccc; font-weight:bold; color:#e67e22;">← VARIES</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Deployment rate</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
-      </tr>
-      <tr style="background:#fafafa;">
-        <td style="padding:6px 10px; border:1px solid #ccc;">Prevention effect (P_exploit multiplier)</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Network topology</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
-      </tr>
-      <tr style="background:#fafafa;">
-        <td style="padding:6px 10px; border:1px solid #ccc;">Seeds per condition</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
-      </tr>
-      <tr>
-        <td style="padding:6px 10px; border:1px solid #ccc;">Simulation duration</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
-        <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <!-- Delta table: what changes from the H1 baseline. Yellow row = varied parameter. -->
+  <div style="margin: 0.5em 0 2em 0;">
+    <p><strong>What H1 Tests:</strong> Sharing scenario is the independent variable. All other parameters hold at base values.</p>
+    <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
+      <thead>
+        <tr style="background:#f2f2f2;">
+          <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Parameter</th>
+          <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Base Model Default</th>
+          <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">H1 Experiment</th>
+          <th style="text-align:left; padding:6px 10px; border:1px solid #ccc;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:#fffde7;">
+          <td style="padding:6px 10px; border:1px solid #ccc;">Sharing scenario</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Single fixed value</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">NONE / LOCAL / NEIGHBOR / GLOBAL — all four swept</td>
+          <td style="padding:6px 10px; border:1px solid #ccc; font-weight:bold; color:#e67e22;">← VARIES</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Deployment rate</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px 10px; border:1px solid #ccc;">Prevention effect (P_exploit multiplier)</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">0.10</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">0.10 (fixed)</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Network topology</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Watts-Strogatz (ws_k=4)</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+        </tr>
+        <tr style="background:#fafafa;">
+          <td style="padding:6px 10px; border:1px solid #ccc;">Seeds per condition</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">100</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+        </tr>
+        <tr>
+          <td style="padding:6px 10px; border:1px solid #ccc;">Simulation duration</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">365 days</td>
+          <td style="padding:6px 10px; border:1px solid #ccc;">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<h3>2.1 The Central Question</h3>
+  <!-- Intuition callout box: written BEFORE any results details -->
+  <div class="finding-box">
+    <strong>Intuition:</strong> The more teams that see an incident postmortem, the more teams enter the
+    4-stage learning pipeline. More teams in the pipeline means more teams eventually reach Stage 4
+    (Exploitation) and lower their incident rates. GLOBAL should produce the fewest incidents simply
+    because it maximizes the number of pipeline entries per incident. If this ordering does not hold,
+    the pipeline implementation is broken.
+  </div>
+
+  <h3>2.1 The Question</h3>
   <p>
     Does sharing incident knowledge more broadly reduce system failures? H1 states:
     GLOBAL &gt; NEIGHBOR &gt; LOCAL &gt; NONE, where "greater" means fewer incidents and
@@ -694,65 +791,23 @@
     purpose of this experiment.
   </p>
 
-  <div class="finding-box">
-    <strong>Intuition:</strong> The more teams that see an incident postmortem, the more teams enter the
-    4-stage learning pipeline. More teams in the pipeline means more teams eventually reach Stage 4
-    (Exploitation) and lower their incident rates. GLOBAL should produce the fewest incidents simply
-    because it maximizes the number of pipeline entries per incident. If this ordering does not hold,
-    the pipeline implementation is broken.
-  </div>
-
-  <h3>2.2 A Real-World Analogy: The Postmortem Sharing Decision</h3>
+  <h3>2.2 Real-World Analogy</h3>
   <p>
-    When a software organization has to handle a production outage, the on-call team has to jump in
-    now to investigate, resolve the issue, and eventually write a postmortem. That document is full
-    of critical lessons: which configuration was wrong, what monitoring was missing, and how the
-    failure cascaded through the system. The real question is what happens to those lessons once
-    the incident is over.
+    When a software organization handles a production outage, the on-call team investigates,
+    resolves the issue, and writes a postmortem. That document contains critical lessons:
+    which configuration was wrong, what monitoring was missing, how the failure cascaded.
+    The question is what happens to those lessons once the incident is over.
+  </p>
+  <p>
+    If the report stays in the owning team's private Confluence page, that is LOCAL learning —
+    knowledge isolated to the team that lived through the failure. If the team posts it in a
+    shared Slack channel that adjacent teams follow, that is NEIGHBOR-level learning. If the
+    team presents findings in a company-wide incident review attended by all engineering teams,
+    that is GLOBAL learning — every team hears about it and can update their own practices.
+    The simulation follows this same logic and tests which scope produces the fewest repeated failures.
   </p>
 
-  <p>
-    If the written report stays in the owning team's private Confluence page, that is local
-    learning — the knowledge is isolated to the team that lived through the failure. If the team
-    posts it in a shared Slack channel that adjacent teams in the communication network follow,
-    that is neighbor-level learning — the signal reaches teams close in the organization graph. If
-    the team that wrote the report presents their findings in a company-wide incident review
-    attended by all engineering teams, that is global learning — every team hears about it and can
-    update their own practices accordingly.
-  </p>
-
-  <p>
-    My simulation follows this same logic, using the organization as the primary unit of
-    measurement. The core mechanism is agent-level knowledge accumulation, which directly reduces
-    the probability of future incidents. By adjusting the dissemination boundaries, I can test how
-    different sharing scopes impact the organization's overall reliability. Without broad sharing,
-    teams keep repeating the same mistakes that neighboring teams have already solved.
-  </p>
-
-    <h3>2.3 The Four Scenarios</h3>
-  <table>
-    <thead><tr><th>Scenario</th><th>Who Learns After an Incident</th></tr></thead>
-    <tbody>
-      <tr>
-        <td><span class="scenario-none">NONE</span></td>
-        <td>Pure baseline. Incidents occur, nothing is updated.</td>
-      </tr>
-      <tr>
-        <td><span class="scenario-local">LOCAL</span></td>
-        <td>The team that owns the affected subsystem. An on-call engineer who fixes an outage, keeps the notes in a private doc, and never shares them with anyone else.</td>
-      </tr>
-      <tr>
-        <td><span class="scenario-neighbor">NEIGHBOR</span></td>
-        <td>The source team which experienced the incident plus all teams directly connected to it in the network. Same as posting a postmortem in a shared Slack channel that adjacent teams follow.</td>
-      </tr>
-      <tr>
-        <td><span class="scenario-global">GLOBAL</span></td>
-        <td>Every team in the organization, regardless of proximity. Like a mandatory company-wide incident review where all engineering teams attend.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3>2.4 Experimental Setup</h3>
+  <h3>2.3 Experimental Setup</h3>
   <p>
     The simulation models an organization of 20 teams connected via a Watts-Strogatz small-world
     network, a topology chosen because it balances local clustering with short average path
@@ -819,7 +874,7 @@
     </tbody>
   </table>
 
-  <h3>2.5 Core Results</h3>
+  <h3>2.4 Results</h3>
   <table>
     <thead>
       <tr>
@@ -827,7 +882,7 @@
         <th>Mean Incidents</th>
         <th>Availability</th>
         <th>Prevention K</th>
-        <th>Transform %</th>
+        <th>Transform % <span style="font-size:0.85em; font-weight:normal">(% of learning events that produced structural behavioral change)</span></th>
       </tr>
     </thead>
     <tbody>
@@ -856,7 +911,7 @@
     <thead>
       <tr>
         <th>Metric</th>
-        <th>Plain English</th>
+        <th>What It Measures</th>
         <th>How It Is Calculated</th>
         <th>What the Scale Means</th>
       </tr>
@@ -889,8 +944,7 @@
     </tbody>
   </table>
 
-
-  <h3>2.6 The Transformation Rate Jump: Source Asymmetry</h3>
+  <h3>2.5 Analysis</h3>
   <p>
     The 0% transformation rate in the LOCAL scenario is due to how LOCAL accumulates knowledge. In
     the simulation, the team that owns the affected subsystem is skipped in the post-incident
@@ -898,21 +952,16 @@
     the LOCAL strategy, no other teams are in the learning pipeline, so the cross-team pipeline
     never fires and transformation events do not occur.
   </p>
-
   <p>
     The NEIGHBOR strategy introduces at least one non-source team into every learning event.
     GLOBAL reaches 89.5% because every team in the organization received every incident's
     knowledge; cosine similarity then rises, the transformation threshold is crossed repeatedly,
     making structural learning the norm.
   </p>
-
-  <h3>2.7 When Does the Ordering Emerge?</h3>
   <p>
     In the first 30 days of the simulation, H1 holds: the NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL
     incident ordering is already present and statistically distinguishable.
   </p>
-
-  <h3>2.8 Effect Sizes</h3>
   <table>
     <thead><tr><th>Comparison</th><th>Cohen's d</th><th>Interpretation</th></tr></thead>
     <tbody>
@@ -924,7 +973,6 @@
       <tr><td>NEIGHBOR vs. GLOBAL</td><td>3.44</td><td>Large</td></tr>
     </tbody>
   </table>
-
   <div class="result-highlight">
     The NONE vs. GLOBAL effect size d = 11.51 is the most significant finding. To put this in
     perspective: there is zero overlap between these two groups. Even the best-performing
@@ -932,7 +980,8 @@
     where global sharing was active.
   </div>
 
-  <h3>2.9 The Robustness of H1</h3>
+  <!-- ROBUSTNESS: move to sensitivity section -->
+  <h3>2.5.1 Robustness of H1</h3>
   <ul>
     <li><strong>Team count:</strong> 6, 20, and 50 teams</li>
     <li><strong>Simulation duration:</strong> 180 to 1,095 days</li>
@@ -951,7 +1000,7 @@
     knowledge flows through the network under these model assumptions.
   </p>
 
-  <h3>2.10 Conclusion</h3>
+  <h3>2.6 Conclusion</h3>
   <div class="finding-box">
     Under the conditions modeled — 20 teams, Watts-Strogatz topology, 365 simulated days, and a
     base incident rate of 0.10 — the data support H1. The ordering NONE &gt; LOCAL &gt; NEIGHBOR &gt;
@@ -959,19 +1008,13 @@
     step (all Cohen's d &gt; 3.44, p &lt; 0.001). The 45% reduction from NONE to GLOBAL is large in
     absolute terms, but reflects specific model assumptions about how knowledge flows and decays.
     Whether this magnitude translates to real organizations depends on how well these assumptions
-    hold in practice — a question for empirical follow-up. What the simulation establishes is
-    that, under these assumptions, sharing scope is the dominant lever for reliability.
+    hold in practice. What the simulation establishes is that, under these assumptions, sharing
+    scope is the dominant lever for reliability.
   </div>
 
 
 
-
-
-
-  <!-- ============================================================ -->
-  <hr class="section-rule">
-
-  <h2 id="h2-deployment">3. H2 — Deployment Velocity and Incident Risk</h2>
+<h2 id="h2-deployment">3. H2 — Deployment Velocity and Incident Risk</h2>
 
 <div style="margin: 0.5em 0 2em 0;">
   <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
@@ -1027,16 +1070,6 @@
   </table>
 </div>
 
-  <h3>3.1 The Question</h3>
-  <p>
-    The question posed: does deploying software updates more frequently cause more incidents? The DevOps research
-    literature (Forsgren et al., Accelerate, 2018) states a formal paradox — high performing organizations move faster and fail less. Our Hypothesis 2 investigates
-    this tension directly, by asking whether the type of organizational learning moderates the relationship between a team's deployment velocity and incident counts.
-  </p>
-  <p>
-    H2 is confirmed if higher deployment rates produce more incidents, and if this effect is smaller under GLOBAL sharing than under LOCAL. A flat relationship between deployment rate and incident count would suggest the model is not capturing deployment risk correctly.
-  </p>
-
 <!-- ============================================================ -->
 <div class="finding-box">
   <strong>Intuition:</strong> More deployments = more chances to introduce a regression.
@@ -1045,33 +1078,95 @@
   fewer incidents than expected. The question is whether learning can outpace deployment risk.
 </div>
 
+  <h3>3.1 The Question</h3>
+  <p>
+    The question posed: does deploying software updates more frequently cause more incidents?
+    H2 investigates this tension directly by asking whether the type of organizational learning
+    moderates the relationship between a team's deployment velocity and incident counts.
+  </p>
+  <p>
+    H2 is confirmed if higher deployment rates produce more incidents, and if this effect is
+    smaller under GLOBAL sharing than under LOCAL. A flat relationship between deployment rate
+    and incident count would suggest the model is not capturing deployment risk correctly.
+  </p>
+
   <h3>3.2 A Real-World Analogy: Two Engineering Teams and Their Deploy Cadence</h3>
   <p>
-    Consider two software engineering teams deploying bug fixes and feature updates to production regularly. Team A deploys once a week; Team B deploys
-    every day or two. In the short run, Team B will encounter more incidents simply because they are pushing changes more often — more deployments yield more chances
-    to introduce a regression into production code.
+    Consider two software engineering teams deploying bug fixes and feature updates to production
+    regularly. Team A deploys once a week; Team B deploys every day or two. In the short run,
+    Team B will encounter more incidents simply because they are pushing changes more often —
+    more deployments yield more chances to introduce a regression into production code.
   </p>
   <p>
-    Now suppose Team B also learns faster. Every outage is a learning opportunity: the team writes a postmortem,
-    identifies the root causes and key events, and updates their deployment checklist or automated tests (exploitation). The question is what
-    happens to those lessons. If they stay with Team B, the team itself improves but the rest of the engineering organization keeps recurring the same
-    mistakes. If the lessons are shared in incident reviews, the organization as a whole gets smarter, and future incidents become less likely
-    across teams. The same number of deployments produces very different reliability outcomes depending on whether learning stays local or spreads globally.
+    Now suppose Team B also learns faster. Every outage is a learning opportunity: the team
+    writes a postmortem, identifies the root causes and key events, and updates their deployment
+    checklist or automated tests (exploitation). The question is what happens to those lessons.
+    If they stay with Team B, the team itself improves but the rest of the engineering
+    organization keeps recurring the same mistakes. If the lessons are shared in incident
+    reviews, the organization as a whole gets smarter, and future incidents become less likely
+    across teams. The same number of deployments produces very different reliability outcomes
+    depending on whether learning stays local or spreads globally.
   </p>
 
-  <h3>3.3 What Deployment Rate Means in the Model</h3>
+  <h3>3.3 Experimental Setup</h3>
   <p>
-    Each team is given a deployment rate parameter representing the probability of deploying on any given day. At 0.05,
-    a team deploys roughly once every three weeks. At 0.50, a team deploys on approximately half of all working days. In the formula, a
-    deployment risk multiplier of 1.5× is applied to incident probability on deployment days.
+    H2 was tested using a controlled sweep across five deployment rate conditions: 0.05, 0.10,
+    0.20, 0.30, and 0.50. All other parameters were held fixed: 20 teams, Watts-Strogatz
+    network, 365 days, 100 seeds per condition. Both GLOBAL and LOCAL learning scenarios were
+    tested.
   </p>
+  <p>
+    Each team is given a deployment rate parameter representing the probability of deploying on
+    any given day. At 0.05, a team deploys roughly once every three weeks. At 0.50, a team
+    deploys on approximately half of all working days. In the formula, a deployment risk
+    multiplier of 1.5× is applied to incident probability on deployment days:
+  </p>
+
   <pre class="formula">p_incident = base_rate × (1 - avg_prevention × prevention_effect) × deployment_modifier</pre>
 
-  <h3>3.4 Experimental Design</h3>
-  <p>
-    H2 was tested using a controlled sweep across five deployment rate conditions: 0.05, 0.10, 0.20, 0.30, and 0.50.
-    All other parameters were held fixed: 20 teams, Watts-Strogatz network, 365 days, 100 seeds per condition. Both GLOBAL and LOCAL learning scenarios were tested.
-  </p>
+  <table>
+    <caption style="text-align:left; margin-bottom:0.5em;"><strong>Formula Parameter Key</strong></caption>
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>What It Represents</th>
+        <th>Value in This Experiment</th>
+        <th>Units / Range</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>p_incident</code></td>
+        <td>Probability that an incident occurs on a given day for a given team</td>
+        <td>Computed per team per day</td>
+        <td>0.0 – 1.0</td>
+      </tr>
+      <tr>
+        <td><code>base_rate</code></td>
+        <td>Baseline daily incident probability before any learning has occurred</td>
+        <td>0.10</td>
+        <td>0.0 – 1.0; fixed across H2</td>
+      </tr>
+      <tr>
+        <td><code>avg_prevention</code></td>
+        <td>The team's current average Prevention K — how much incident-prevention knowledge has accumulated across all knowledge dimensions</td>
+        <td>Grows over time; approaches 0.992 under GLOBAL sharing by day 365</td>
+        <td>0.0 – 1.0; rises as team learns</td>
+      </tr>
+      <tr>
+        <td><code>prevention_effect</code></td>
+        <td>A scaling factor controlling how strongly accumulated knowledge translates into actual risk reduction</td>
+        <td>0.10</td>
+        <td>0.0 – 1.0; fixed across H2</td>
+      </tr>
+      <tr>
+        <td><code>deployment_modifier</code></td>
+        <td>A multiplier applied on days when a deployment occurs, reflecting the elevated risk of introducing a regression during a change event</td>
+        <td>1.5 on deployment days; 1.0 on non-deployment days</td>
+        <td>1.0 (no deployment) or 1.5 (deployment day)</td>
+      </tr>
+    </tbody>
+  </table>
 
   <p><strong>Table 3.0: H2 Experimental Parameters</strong></p>
   <table>
@@ -1121,7 +1216,7 @@
     </tbody>
   </table>
 
-  <h3>3.5 Results</h3>
+  <h3>3.4 Results</h3>
   <p><strong>Table 3.1: Total Incidents by Deployment Rate and Learning Scenario (mean over 100 seeds)</strong></p>
   <table>
     <thead>
@@ -1141,42 +1236,49 @@
     </tbody>
   </table>
 
-  <h3>3.6 The Saturation Finding</h3>
+  <h3>3.5 Analysis: The Saturation Mechanism</h3>
   <p>
-    Going from 0.05 to 0.50 represents a 10× increase in deployment frequency. Yet GLOBAL incidents rise only from 152.5 to 188.4,
-    showing a near-flat GLOBAL curve.
+    Going from 0.05 to 0.50 represents a 10× increase in deployment frequency. Yet GLOBAL
+    incidents rise only from 152.5 to 188.4, showing a near-flat GLOBAL curve.
   </p>
   <p>
-    When an organization has been operating under GLOBAL learning for a sustained period, Prevention K
-    approaches 0.992. Substituting into the formula:
+    When an organization has been operating under GLOBAL learning for a sustained period,
+    Prevention K approaches 0.992. Substituting into the formula:
   </p>
   <pre class="formula">(1 - avg_prevention × prevention_effect) ≈ (1 - K) = 1 - 0.992 = 0.008</pre>
   <p>
-    Even when the deployment multiplier fires (1.5×), it multiplies against a residual risk of 0.008, because
-    each team's accumulated knowledge has already suppressed most of the baseline risk. Under LOCAL sharing,
-    teams never reach this state individually — knowledge stays within the team that experienced each failure and
-    does not spread, so most teams across the organization remain underinformed and the deployment multiplier
-    continues to act on a much higher baseline.
+    Even when the deployment multiplier fires (1.5×), it multiplies against a residual risk of
+    0.008, because each team's accumulated knowledge has already suppressed most of the baseline
+    risk. Under LOCAL sharing, teams never reach this state individually — knowledge stays within
+    the team that experienced each failure and does not spread, so most teams across the
+    organization remain underinformed and the deployment multiplier continues to act on a much
+    higher baseline.
   </p>
 
   <div class="result-highlight">
     <strong>Saturation mechanism:</strong>
-    Two rates are racing. Deployment velocity determines how fast incidents are generated. Learning velocity
-    determines how fast knowledge accumulates to prevent them from occurring.
+    Two rates are racing. Deployment velocity determines how fast incidents are generated.
+    Learning velocity determines how fast knowledge accumulates to prevent them from occurring.
   </div>
 
-  <h3>3.7 Connection to DORA and the Accelerate Research</h3>
+  <h3>3.6 The Cross-Sweep: H2 × H3 Interaction (Experiment 10)</h3>
   <p>
-    Forsgren, Humble, and Kim (2018) identified a cluster of high performers characterized by high deployment
-    frequency and low change failure rates. The H2 results offer one mechanism-level explanation consistent with this finding. When teams share incident knowledge broadly, organizational learning
-    suppresses the baseline risk fast enough that deployment velocity no longer drives incidents upward proportionally. The simulation does not claim to fully explain the DORA correlation, but isolates the specific contribution
-    of knowledge sharing structure to this relationship.
+    H2 establishes that deployment velocity drives incidents upward. H3 (covered in the next
+    section) asks whether investing more effort in postmortems — higher exploitation probability —
+    reduces incidents. Before analyzing each hypothesis in isolation, it is worth asking whether
+    these two levers <em>interact</em>: does the benefit of working harder on postmortems grow
+    larger or smaller depending on how fast a team is shipping?
   </p>
-
-  <h3>3.8 The Cross-Sweep: H2 × H3 Interaction (Experiment 10)</h3>
   <p>
-    The question posed here: does the effort a team invests in postmortems change the impact of shipping software frequently? The simulation
-    indicates these are two independent levers.
+    Experiment 10 was run specifically to answer this question. It crossed three deployment rate
+    values (0.05, 0.10, 0.30) with three exploitation probability values (0.2, 0.6, 0.9),
+    producing a 3 × 3 grid of conditions run under the GLOBAL sharing scenario, 100 seeds each.
+    If deployment rate and exploitation intensity were <em>orthogonal</em> — meaning each lever
+    operates through its own independent pathway and the two do not amplify or dampen one another —
+    the table should show rows that change with deployment rate but columns that stay flat across
+    exploitation levels. An interaction would appear as cells that diverge from this pattern:
+    for example, if high exploitation provided extra protection specifically at high deployment
+    rates, the bottom-right cell would be noticeably lower than expected.
   </p>
 
   <p><strong>Table 3.2: Mean Incidents — Deployment Rate × Exploitation Probability (100 seeds each)</strong></p>
@@ -1209,162 +1311,195 @@
     </tbody>
   </table>
   <p>
-    Reading across any row, the numbers barely move — a maximum spread of 2.3 incidents across three different exploitation effort levels. Reading
-    down the columns, incidents rise with deployment rate as expected. The columns are flat; the rows are not. This is the orthogonality result: deployment rate
-    and exploitation intensity affect incident counts through completely separate pathways.
+    Reading across any row, the numbers barely move — a maximum spread of 2.3 incidents across
+    three different exploitation effort levels. Reading down the columns, incidents rise with
+    deployment rate as expected. The columns are flat; the rows are not. This is the orthogonality
+    result: deployment rate and exploitation intensity affect incident counts through completely
+    separate pathways in the model, and adjusting one does not alter the effectiveness of the other.
   </p>
 
-  <h3>3.9 Conclusion</h3>
+  <h3>3.7 Conclusion</h3>
   <div class="finding-box">
-    Under the conditions modeled, H2 is supported. Higher deployment rates produce more incidents across all conditions, confirming that deployment velocity is a source of incident risk in the model. However, the relationship is strongly sublinear under GLOBAL sharing: a 10× increase in deployment frequency (0.05 → 0.50) produces only a 24% increase in incidents. This is consistent with the learning saturation mechanism — when Prevention K approaches 0.992, the residual risk each deployment can trigger is near its floor. The DORA finding that high performers deploy frequently and fail less (Forsgren et al., 2018) is consistent with this mechanism, though the simulation isolates knowledge sharing as one specific contributor. Whether this saturation effect holds in real organizations depends on whether their learning pipelines approach the efficiency assumed here.
+    Under the conditions modeled, H2 is supported. Higher deployment rates produce more incidents
+    across all conditions, confirming that deployment velocity is a source of incident risk in the
+    model. However, the relationship is strongly sublinear under GLOBAL sharing: a 10× increase
+    in deployment frequency (0.05 → 0.50) produces only a 24% increase in incidents. This is the
+    learning saturation mechanism — when Prevention K approaches 0.992, the residual risk each
+    deployment can trigger is near its floor, so additional deployments contribute little marginal
+    risk. The cross-sweep (Experiment 10) further shows that deployment velocity and exploitation
+    intensity are orthogonal levers: each operates through its own pathway and neither amplifies
+    nor dampens the other.
   </div>
 
 
 
+<h2 id="h3-exploitation">4. H3 — Learning Effectiveness (Exploitation)</h2>
 
+  <!-- DELTA TABLE: what changes from H1 baseline -->
+  <div style="margin: 0.5em 0 2em 0;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
+      <caption style="text-align:left; margin-bottom:0.5em; font-size:0.9em; color:#444;">
+        <strong>What H3 Tests:</strong> How much does exploitation effectiveness matter? <code>prevention_effect</code>
+        is swept from 0.0 (knowledge has zero effect on behavior) to 0.50 (strong effect). Sharing scenario is locked
+        to GLOBAL so that Stage 4 is the only thing varying. Seeds raised to 500 to detect the expected small,
+        curved effect.
+      </caption>
+      <thead>
+        <tr style="background:#f5f5f5;">
+          <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Parameter</th>
+          <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H1 (Baseline)</th>
+          <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H3 Experiment</th>
+          <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Sharing scenario</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">All 4 swept</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">GLOBAL only</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">— locked to isolate Stage 4</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Deployment rate</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+        </tr>
+        <tr style="background:#fffde7;">
+          <td style="padding:8px 12px; border:1px solid #ddd;">Prevention effect</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">0.0 &rarr; 0.50 swept (7 values)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold; color:#e67e22;">&larr; THIS CHANGES</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Network topology</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+        </tr>
+        <tr style="background:#fff8e1;">
+          <td style="padding:8px 12px; border:1px solid #ddd;">Seeds per condition</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">500</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; font-size:0.88em; color:#b8860b;">&uarr; increased for statistical power</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; border:1px solid #ddd;">Simulation duration</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+          <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
+          <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
+  <!-- INTUITION CALLOUT -->
+  <div class="finding-box">
+    <strong>Intuition:</strong> Getting better at applying knowledge (Stage 4) should reduce incidents.
+    But Stage 4 can only fire on knowledge that already reached the team — meaning Stage 1
+    (acquisition) sets the ceiling. Improving exploitation cannot compensate for knowledge
+    that was never shared in the first place. We expect diminishing returns, and we expect
+    the absolute effect to be smaller than H1 by a wide margin.
+  </div>
 
-  <!-- ============================================================ -->
-  <hr class="section-rule">
-
-  <h2 id="h3-exploitation">4. H3 — Learning Effectiveness (Exploitation)</h2>
-
-  <p>
-    H3 focuses on Stage 4 of the absorptive capacity pipeline — Exploitation. Recall from Section 1.4 that
-    Stage 4 is where knowledge finally translates into behavioral change: a team updates their runbook,
-    fixes a configuration, adds a monitoring alert. Stages 1–3 determine whether knowledge reaches a team
-    and whether the team mentally integrates it. Stage 4 is where that mental integration becomes action.
-  </p>
-  <p>
-    In H1 and H2, exploitation probability (P_exploit = 0.60) was held constant. H3 asks a different question:
-    how much does the intensity of Stage 4 effort matter? If we invest heavily in getting teams to follow through
-    on postmortem action items — better tooling, accountability processes, dedicated time — does that produce
-    proportional reliability gains?
-  </p>
-
-<div style="margin: 0.5em 0 2em 0;">
-  <table style="width:100%; border-collapse:collapse; font-size:0.92em; border:1px solid #ddd;">
-    <caption style="text-align:left; margin-bottom:0.5em; font-size:0.9em; color:#444;">
-      <strong>What H3 Tests:</strong> How much does exploitation effectiveness matter? Prevention_effect is swept from 0 (knowledge has no effect) to 0.50 (strong effect). Seeds raised to 500 to detect the expected small, curved effect.
-    </caption>
-    <thead>
-      <tr style="background:#f5f5f5;">
-        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Parameter</th>
-        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H1 (Baseline)</th>
-        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">H3 Experiment</th>
-        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Sharing scenario</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">All 4 swept</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">GLOBAL only</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Deployment rate</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
-      </tr>
-      <tr style="background:#fffde7;">
-        <td style="padding:8px 12px; border:1px solid #ddd;">Prevention effect</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">0.10 (fixed)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">0.0 → 0.50 swept (7 values)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; font-weight:bold; color:#e67e22;">← THIS CHANGES</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Network topology</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Watts-Strogatz (ws_k=4)</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
-      </tr>
-      <tr style="background:#fff8e1;">
-        <td style="padding:8px 12px; border:1px solid #ddd;">Seeds per condition</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">100</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">500</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; font-size:0.88em; color:#b8860b;">↑ increased for power</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 12px; border:1px solid #ddd;">Simulation duration</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
-        <td style="padding:8px 12px; border:1px solid #ddd;">365 days</td>
-        <td style="padding:8px 12px; border:1px solid #ddd; color:#888;">—</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- ============================================================ -->
-<div class="finding-box">
-  <strong>Intuition:</strong> Getting better at applying knowledge (Stage 4) should reduce incidents.
-  But Stage 4 can only fire on knowledge that already reached the team — meaning Stage 1
-  (acquisition) sets the ceiling. Improving exploitation cannot compensate for knowledge
-  that was never shared in the first place. We expect diminishing returns, and we expect
-  the absolute effect to be smaller than H1.
-</div>
-
-  <h3>The Question</h3>
+  <h3>4.1 The Question</h3>
   <p>
     Does investing heavily in how teams exploit incident knowledge — such as better training,
-    more dedicated review time, stronger follow-through processes — produce
-    proportional improvements in system reliability?
+    dedicated review time, and stronger follow-through processes — produce proportional
+    improvements in system reliability?
   </p>
-
   <p>
-    H3 states that the harder teams work to turn incident knowledge into action, the fewer future incidents they will experience, but with sublinear gains.
+    <a href="#pipeline">Recall from Section 1.4</a> that Stage 4 (Exploitation) is the final
+    step in the absorptive capacity pipeline: the point where mental understanding becomes
+    behavioral change — updated runbooks, fixed configurations, new monitoring alerts. In H1
+    and H2, the exploitation probability parameter was held constant at 0.60 and the prevention
+    effect was fixed at 0.10. H3 asks what happens when we vary that translation rate directly.
+    H3 is confirmed if higher <code>prevention_effect</code> values produce fewer incidents, and
+    if the gains are sublinear — each additional unit of exploitation effort yielding less than
+    the previous unit.
   </p>
 
-  <h3>A Real-World Framing</h3>
+  <h3>4.2 Real-World Analogy</h3>
   <p>
     Imagine a VP of Engineering with a fixed budget and two options:
   </p>
   <ul>
-    <li>Option A - Structural: Build a global incident sharing platform so that every team can see every postmortem. This changes who has access to the incident knowledge.</li>
-    <li>Option B - Behavioral: Train teams in blameless postmortem facilitation, action item tracking, and follow-through accountability. This changes how intensely teams act on
-    the knowledge they already have.</li>
+    <li><strong>Option A — Structural:</strong> Build a global incident sharing platform so that every team
+    can see every postmortem. This changes <em>who has access</em> to incident knowledge.</li>
+    <li><strong>Option B — Behavioral:</strong> Train teams in blameless postmortem facilitation, action
+    item tracking, and follow-through accountability. This changes <em>how intensely teams act</em> on the
+    knowledge they already have.</li>
   </ul>
-
-
-  <h3>Theoretical Basis: Zahra &amp; George (2002)</h3>
   <p>
-    H3 targets Stage 4 (Exploitation Stage) of the absorptive capacity pipeline. The theoretical prediction is
-    that exploitation does not yield high returns because the upstream stages act as a ceiling once knowledge
-    reaches the exploitation stage. No matter how effectively a team exploits
-    knowledge, they cannot exploit knowledge they never acquired or transformed.
+    H3 is Option B in isolation. The experiment locks sharing to GLOBAL (so every team has the
+    information) and then asks: once all teams have the knowledge, how much does the intensity of
+    follow-through matter? The simulation tests this by sweeping the <code>prevention_effect</code>
+    parameter — the rate at which held knowledge translates into lower incident probability —
+    from zero to 0.50.
   </p>
 
-  <h3>What <code>prevention_effect</code> Means in the Model</h3>
+  <h3>4.3 Experimental Setup</h3>
+
+  <h4>What <code>prevention_effect</code> means</h4>
   <p>
-    In the model, the prevention effect parameter is the translation rate — how efficiently held knowledge converts into actual risk reduction. Suppose a team has a
-    knowledge score of K = 0.992:
+    In the model, <code>prevention_effect</code> controls how efficiently a team converts accumulated
+    knowledge into actual risk reduction. The incident probability formula is:
   </p>
-  <table>
-    <thead><tr><th><code>prevention_effect</code></th><th>Incident Probability Reduction</th></tr></thead>
+  <pre class="formula">p_incident = base_rate &times; (1 - avg_prevention_K &times; prevention_effect)</pre>
+
+  <table style="width:100%; border-collapse:collapse; font-size:0.92em; margin: 1em 0 0.5em 0;">
+    <caption style="text-align:left; font-weight:bold; margin-bottom:0.4em; color:#333;">
+      Parameter Key — prevention effect formula
+    </caption>
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:7px 10px; border:1px solid #ddd; text-align:left;">Variable</th>
+        <th style="padding:7px 10px; border:1px solid #ddd; text-align:left;">What it represents</th>
+        <th style="padding:7px 10px; border:1px solid #ddd; text-align:left;">Typical value</th>
+      </tr>
+    </thead>
     <tbody>
-      <tr><td>0.0</td><td>0% — knowledge has no effect</td></tr>
-      <tr><td>0.5</td><td>~50% reduction relative to base</td></tr>
-      <tr><td>1.0</td><td>~99% reduction relative to base</td></tr>
+      <tr>
+        <td style="padding:7px 10px; border:1px solid #ddd;"><code>base_rate</code></td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">The probability that a given team will have an incident on any given day if they have learned nothing at all. Think of it as the background failure rate of an untrained system.</td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">0.10 (fixed)</td>
+      </tr>
+      <tr style="background:#fafafa;">
+        <td style="padding:7px 10px; border:1px solid #ddd;"><code>avg_prevention_K</code></td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">The team's current knowledge score — how much incident-prevention knowledge the team has accumulated so far. 0 means they have learned nothing; 1 means they have accumulated the maximum possible knowledge.</td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">0 &ndash; 1.0 (grows over time)</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 10px; border:1px solid #ddd;"><code>prevention_effect</code></td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">The translation rate: how efficiently the team's knowledge converts into actual risk reduction. A value of 0.0 means the team has learned but nothing changes — knowledge sits unused. A value of 0.50 means a team with full knowledge halves their incident probability. <strong>This is the parameter H3 sweeps.</strong></td>
+        <td style="padding:7px 10px; border:1px solid #ddd;">0.0 &ndash; 0.50 (swept in H3)</td>
+      </tr>
     </tbody>
   </table>
 
-  <h3>Why We Ran It Twice</h3>
-  <p>
-    <strong>First Run (100 seeds, range 0.0–0.10):</strong>
-    The results appeared essentially linear across
-    that narrow band. The problem was two-fold: the range was too narrow to reveal curvature, and at 100
-    seeds per condition, small effects are easily obscured by simulation variance.
+  <p style="margin-top:0.75em; padding: 0.6em 1em; background:#f0f4ff; border-left:3px solid #2980b9; font-size:0.95em;">
+    <strong>The formula says:</strong> an incident happens today if a random draw falls below the team's
+    current effective risk level. That risk level starts at <code>base_rate</code> and is discounted by
+    how much the team knows (<code>avg_prevention_K</code>) multiplied by how effectively they act on
+    that knowledge (<code>prevention_effect</code>). A team that knows a lot but does nothing with it
+    (low <code>prevention_effect</code>) still has near-baseline risk. A team that acts strongly on what
+    it knows (high <code>prevention_effect</code>) drives risk down proportionally.
   </p>
 
+  <h4>Why the experiment was run twice</h4>
   <p>
-    <strong>Second Run (500 seeds, range 0.0–0.50):</strong> The range was extended five times and the seed
-    count increased to 500 per condition, making this the most statistically rigorous test in the entire
-    study.
+    <strong>First run (100 seeds, range 0.0&ndash;0.10):</strong> Results appeared essentially linear
+    across that narrow band. The range was too narrow to reveal curvature, and at 100 seeds per
+    condition, small effects are easily obscured by simulation variance.
+  </p>
+  <p>
+    <strong>Second run (500 seeds, range 0.0&ndash;0.50):</strong> The range was extended five-fold and
+    the seed count increased to 500 per condition — making this the most statistically rigorous
+    experiment in the study.
   </p>
 
-  <h3>Table 4.1: H3 Experimental Parameters</h3>
   <table>
+    <caption><strong>Table 4.1: H3 Experimental Parameters</strong></caption>
     <thead>
       <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
     </thead>
@@ -1372,12 +1507,17 @@
       <tr>
         <td>Variable swept</td>
         <td><code>prevention_effect</code></td>
-        <td>0.0–0.50 (500-seed run); 0.0–0.10 (initial 100-seed run)</td>
+        <td>0.0, 0.01, 0.02, 0.05, 0.10, 0.20, 0.50 (final run); 0.0&ndash;0.10 (initial run)</td>
       </tr>
       <tr>
         <td>Sharing scenario</td>
-        <td>GLOBAL</td>
-        <td>Isolates Stage 4 — maximum knowledge reaches every team</td>
+        <td><span class="scenario-global">GLOBAL</span></td>
+        <td>Locked — isolates Stage 4 with maximum knowledge available to every team</td>
+      </tr>
+      <tr>
+        <td>Deployment rate</td>
+        <td>0.10</td>
+        <td>Fixed — same as H1 baseline</td>
       </tr>
       <tr>
         <td>P_assimilate</td>
@@ -1390,66 +1530,72 @@
         <td>Fixed</td>
       </tr>
       <tr>
-        <td>Network</td>
-        <td>Watts-Strogatz</td>
-        <td>Fixed</td>
+        <td>Network topology</td>
+        <td>Watts-Strogatz (ws_k=4, p=0.1)</td>
+        <td>Same as H1</td>
       </tr>
       <tr>
-        <td>Seeds</td>
-        <td>500 (final run)</td>
-        <td>5&times; H1 — needed to detect curvature</td>
+        <td>Number of teams</td>
+        <td>20</td>
+        <td>Base configuration</td>
       </tr>
       <tr>
         <td>Simulation duration</td>
         <td>365 days</td>
         <td></td>
       </tr>
+      <tr>
+        <td>Seeds per condition</td>
+        <td>500 (final run)</td>
+        <td>5&times; H1 — needed to detect curvature in a small effect</td>
+      </tr>
     </tbody>
   </table>
 
-  <h3>Results (500-Seed Run)</h3>
+  <h3>4.4 Results</h3>
+
   <table>
-    <thead><tr><th><code>prevention_effect</code></th><th>Mean Incidents</th><th>Change from Previous</th></tr></thead>
+    <caption><strong>Table 4.2: Mean Incidents by Exploitation Effectiveness (500 seeds, GLOBAL sharing, 365 days)</strong></caption>
+    <thead>
+      <tr>
+        <th><code>prevention_effect</code></th>
+        <th>Mean Incidents</th>
+        <th>Change from Previous Step</th>
+        <th>Cumulative Reduction from 0.0</th>
+      </tr>
+    </thead>
     <tbody>
-      <tr><td>0.00</td><td>484.1</td><td>—</td></tr>
-      <tr><td>0.01</td><td>481.3</td><td>−2.7</td></tr>
-      <tr><td>0.02</td><td>477.7</td><td>−3.7</td></tr>
-      <tr><td>0.05</td><td>468.8</td><td>−8.8</td></tr>
-      <tr><td>0.10</td><td>451.2</td><td>−17.7</td></tr>
-      <tr><td>0.20</td><td>420.5</td><td>−30.7</td></tr>
-      <tr><td>0.50</td><td>335.3</td><td>−85.2</td></tr>
+      <tr><td>0.00 (no effect)</td><td>484.1</td><td>—</td><td>—</td></tr>
+      <tr><td>0.01</td><td>481.3</td><td>&minus;2.7</td><td>&minus;2.7 (&minus;0.6%)</td></tr>
+      <tr><td>0.02</td><td>477.7</td><td>&minus;3.7</td><td>&minus;6.5 (&minus;1.3%)</td></tr>
+      <tr><td>0.05</td><td>468.8</td><td>&minus;8.8</td><td>&minus;15.3 (&minus;3.2%)</td></tr>
+      <tr><td>0.10 (H1 baseline)</td><td>451.2</td><td>&minus;17.7</td><td>&minus;32.9 (&minus;6.8%)</td></tr>
+      <tr><td>0.20</td><td>420.5</td><td>&minus;30.7</td><td>&minus;63.6 (&minus;13.1%)</td></tr>
+      <tr><td>0.50 (maximum tested)</td><td>335.3</td><td>&minus;85.2</td><td>&minus;148.8 (&minus;30.7%)</td></tr>
     </tbody>
   </table>
-  <p>Moving from 0.0 to 0.50 reduces mean incidents from 484.1 to 335.3, a reduction of approximately 30%, consistent with H3 being supported.</p>
 
-  <h3>Interpreting the Diminishing Returns</h3>
+  <p>
+    The full sweep from 0.0 to 0.50 reduces mean incidents from 484.1 to 335.3 — a reduction of
+    approximately 31%. However, the gains are not evenly distributed:
+  </p>
   <ul>
-    <li><code>0.0 → 0.10</code> (a realistic, achievable improvement): saves <strong>33 incidents</strong></li>
-    <li><code>0.10 → 0.50</code> (requires 4× more intensive effort): saves <strong>116 incidents</strong></li>
+    <li><code>0.0 &rarr; 0.10</code> (the realistic, achievable range): saves <strong>33 incidents</strong>, a 6.8% reduction.</li>
+    <li><code>0.10 &rarr; 0.50</code> (requires 4&times; more intensive effort): saves <strong>116 additional incidents</strong>, a further 24% reduction — but at dramatically higher organizational cost.</li>
   </ul>
+
   <!-- Figure 4.1: Diminishing Returns Curve -->
   <figure style="margin: 2em 0; text-align: center;">
     <svg viewBox="0 0 620 340" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:620px; font-family: sans-serif; background:#fafafa; border-radius:8px;">
 
       <!-- Chart area: x: 70..570, y: 30..280 -->
-      <!-- Data points: (effect, incidents)
-           0.00 -> 484.1
-           0.01 -> 481.3
-           0.02 -> 477.7
-           0.05 -> 468.8
-           0.10 -> 451.2
-           0.20 -> 420.5
-           0.50 -> 335.3
-        x scale: 0..0.50 mapped to 70..570  (range 500px)
-        y scale: 320..484 mapped to 280..30 (range 250px, inverted — lower is better/top)
-        y_pixel = 280 - ((val - 320) / (484 - 320)) * 250
-        x_pixel = 70 + (effect / 0.50) * 500
-      -->
+      <!-- y_pixel = 280 - ((val - 320) / (484 - 320)) * 250 -->
+      <!-- x_pixel = 70 + (effect / 0.50) * 500 -->
 
       <!-- Grid lines (horizontal) -->
       <line x1="70" y1="280" x2="570" y2="280" stroke="#ccc" stroke-width="1"/>
-      <line x1="70" y1="219" x2="570" y2="219" stroke="#eee" stroke-width="1"/>  <!-- ~420 -->
-      <line x1="70" y1="158" x2="570" y2="158" stroke="#eee" stroke-width="1"/>  <!-- ~460 -->
+      <line x1="70" y1="219" x2="570" y2="219" stroke="#eee" stroke-width="1"/>
+      <line x1="70" y1="158" x2="570" y2="158" stroke="#eee" stroke-width="1"/>
       <line x1="70" y1="30"  x2="570" y2="30"  stroke="#eee" stroke-width="1"/>
 
       <!-- Y axis -->
@@ -1476,17 +1622,6 @@
       <text x="18" y="160" text-anchor="middle" font-size="12" fill="#333" font-weight="bold" transform="rotate(-90, 18, 160)">Mean Incidents (365 days)</text>
 
       <!-- Shaded area under curve -->
-      <!-- Points: (70,52) (80,57) (90,63) (120,89) (170,140) (270,219) (570,280) then back along x axis -->
-      <!-- y_pixel = 280 - ((val - 320) / 164) * 250 -->
-      <!-- 484.1 -> 280 - (164.1/164)*250 = 280 - 249.85 = 30.15 ~ 30 -->
-      <!-- 481.3 -> 280 - (161.3/164)*250 = 280 - 245.6  = 34.4  ~ 34 -->
-      <!-- 477.7 -> 280 - (157.7/164)*250 = 280 - 240.1  = 39.9  ~ 40 -->
-      <!-- 468.8 -> 280 - (148.8/164)*250 = 280 - 226.8  = 53.2  ~ 53 -->
-      <!-- 451.2 -> 280 - (131.2/164)*250 = 280 - 199.9  = 80.1  ~ 80 -->
-      <!-- 420.5 -> 280 - (100.5/164)*250 = 280 - 153.1  = 126.9 ~ 127 -->
-      <!-- 335.3 -> 280 - (15.3/164)*250  = 280 - 23.3   = 256.7 ~ 257 -->
-      <!-- x_pixel: 0.00->70, 0.01->80, 0.02->90, 0.05->120, 0.10->170, 0.20->270, 0.50->570 -->
-
       <polygon points="70,30 80,34 90,40 120,53 170,80 270,127 570,257 570,280 70,280" fill="#2980b9" opacity="0.08"/>
 
       <!-- The curve -->
@@ -1503,7 +1638,7 @@
       <circle cx="270" cy="127" r="4" fill="#2980b9"/>
       <circle cx="570" cy="257" r="5" fill="#e74c3c"/>
 
-      <!-- Callout: realistic range 0.0–0.10 -->
+      <!-- Callout: realistic range 0.0&ndash;0.10 -->
       <rect x="72" y="78" width="100" height="38" rx="4" fill="#fff" stroke="#27ae60" stroke-width="1.5" opacity="0.9"/>
       <text x="122" y="93"  text-anchor="middle" fill="#27ae60" font-size="10" font-weight="bold">Realistic range</text>
       <text x="122" y="108" text-anchor="middle" fill="#27ae60" font-size="10">saves 33 incidents</text>
@@ -1519,135 +1654,165 @@
       <text x="320" y="18" text-anchor="middle" font-size="13" fill="#222" font-weight="bold">H3: Diminishing Returns on Exploitation Effectiveness</text>
     </svg>
     <figcaption style="font-size: 0.85em; color: #555; margin-top: 0.5em;">
-      <strong>Figure 4.1.</strong> Mean incidents over 365 days as exploitation effectiveness (prevention_effect) increases from 0.00 to 0.50.
-      The curve bends sharply — early gains (0.0&#8202;&#x2192;&#8202;0.10) are steep and achievable; the high-effort tail (0.10&#8202;&#x2192;&#8202;0.50) yields
-      proportionally less per unit of additional investment. Each point is the mean across 500 independent simulation runs.
+      <strong>Figure 4.1.</strong> Mean incidents over 365 days as exploitation effectiveness (<code>prevention_effect</code>)
+      increases from 0.00 to 0.50. The curve bends sharply — early gains (0.0&#8202;&#x2192;&#8202;0.10) are steep and
+      achievable; the high-effort tail (0.10&#8202;&#x2192;&#8202;0.50) yields proportionally less per unit of additional
+      investment. Each point is the mean across 500 independent simulation runs.
     </figcaption>
   </figure>
 
+  <h3>4.5 Analysis and Mechanism</h3>
 
+  <h4>Why Stage 4 is not the bottleneck</h4>
+  <p>
+    A supplementary sensitivity sweep confirmed that varying exploitation probabilities (the likelihood
+    that a team will attempt to apply knowledge at all) across the full range of 0.1&ndash;1.0 produces
+    only a 3-incident variation across the entire simulated organization. Stage 4 is not where the
+    pipeline stalls.
+  </p>
+  <p>
+    The true bottleneck is Stage 3 — Transformation — which is gated by cosine similarity between the
+    team's existing knowledge profile and the new incident knowledge. Cosine similarity, in turn, is
+    driven by the volume and diversity of knowledge the team has accumulated, and knowledge accumulation
+    is driven by sharing scope. In plain terms: a team cannot exploit knowledge it never transformed, and
+    it cannot transform knowledge it never received. Stage 4 effort operates on the output of Stages 1&ndash;3;
+    it cannot recover losses that happened upstream.
+  </p>
 
-
-  <h3>H3 vs. H1: The Comparison That Matters</h3>
-  <table>
-    <thead><tr><th>Intervention</th><th>Incident Reduction</th><th>Notes</th></tr></thead>
+  <h4>H3 vs. H1: What Changes vs. What Stays Fixed</h4>
+  <p>
+    The table below isolates exactly what differs between these two experiments. Its purpose is to make
+    the lever comparison concrete — sharing scope (H1) versus exploitation intensity (H3) — with
+    everything else identical.
+  </p>
+  <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
+    <thead>
+      <tr style="background:#f5f5f5;">
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">What Changes</th>
+        <th style="padding:8px 12px; border:1px solid #ddd; text-align:left;">What Stays Fixed</th>
+      </tr>
+    </thead>
     <tbody>
       <tr>
-        <td>NONE → GLOBAL sharing (H1)</td>
-        <td>~219 incidents, −45%</td>
-        <td>Structural change</td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">
+          <strong>H1:</strong> Sharing scenario swept (NONE &rarr; LOCAL &rarr; NEIGHBOR &rarr; GLOBAL).<br>
+          Result: &minus;45% incidents (NONE &rarr; GLOBAL), d = 11.51.
+        </td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">
+          <code>prevention_effect</code> = 0.10, deployment rate = 0.10, network = Watts-Strogatz, 100 seeds, 365 days.
+        </td>
       </tr>
-      <tr>
-        <td>effect 0.0 → 0.50 (H3)</td>
-        <td>−149 incidents, −30%</td>
-        <td>Requires unrealistic effort level</td>
-      </tr>
-      <tr>
-        <td>effect 0.05 → 0.10 (H3)</td>
-        <td>−18 incidents, −4%</td>
-        <td>Realistic improvement range</td>
+      <tr style="background:#fafafa;">
+        <td style="padding:8px 12px; border:1px solid #ddd;">
+          <strong>H3:</strong> <code>prevention_effect</code> swept (0.0 &rarr; 0.50).<br>
+          Result: &minus;31% incidents (realistic range &minus;7%), 500 seeds required to detect curvature.
+        </td>
+        <td style="padding:8px 12px; border:1px solid #ddd;">
+          Sharing = GLOBAL only, deployment rate = 0.10, network = Watts-Strogatz, 365 days.
+        </td>
       </tr>
     </tbody>
   </table>
 
   <div class="result-highlight">
-    At realistic parameter values, H3 produces roughly a 4% reduction in incidents. H1 — simply expanding
-    who sees incident knowledge — produces 45%. <strong>Who you share with matters far more than how hard
-    you try.</strong>
+    At realistic parameter values, H3 produces roughly a 7% reduction in incidents. H1 — simply
+    expanding who sees incident knowledge — produces 45%. <strong>Who you share with matters far
+    more than how hard you try.</strong>
   </div>
 
-  <h3>Why Stage 4 Is Not the Bottleneck</h3>
-  <p>
-    A supplementary sensitivity sweep confirmed that varying exploitation probabilities (the likelihood that
-    a team will attempt to apply knowledge) across the full range of 0.1–1.0 produces only a 3-incident variation across the entire simulated organization.
-    The true bottleneck is at Stage 3 — Transformation — which is gated by cosine similarity between the team's existing knowledge profile and the new incident knowledge.
-    Cosine similarity, in turn, is driven by the volume and diversity of knowledge a team has accumulated, and knowledge accumulation is driven by sharing scope.
-  </p>
-
-  <h3>Conclusion</h3>
+  <h3>4.6 Conclusion</h3>
   <div class="finding-box">
-    Under the conditions modeled, H3 is supported with diminishing returns consistent with Zahra &amp;
-    George's (2002) pipeline theory. However, the absolute effect is modest. Moving from no exploitation
-    effectiveness (0.0) to a realistic improvement (0.10) reduces incidents by approximately 4% — compared
-    to 45% from expanding sharing scope in H1. This is not a failure of Stage 4; it reflects that Stage 3
-    (Transformation) is the actual bottleneck. A team cannot exploit knowledge it never transformed, and
-    transformation is gated by the diversity and volume of knowledge accumulated — which is driven primarily
-    by sharing scope. The practical implication under these model assumptions: structural changes to sharing
-    scope (H1) should precede investments in exploitation quality (H3), because the ceiling on H3 returns
-    is set by H1.
+    Under the conditions modeled, H3 is confirmed. Increasing exploitation effectiveness
+    (<code>prevention_effect</code> from 0.0 to 0.50) reduces mean incidents from 484 to 335 —
+    a 31% reduction — and the gains are sublinear, with each successive unit of effort yielding
+    less than the one before. This is consistent with the model's internal logic because Stage 4
+    can only act on knowledge that cleared Stages 1&ndash;3: a team that shares globally already
+    accumulates near-maximum knowledge (Prevention K &asymp; 0.992), so the bottleneck shifts
+    upstream to Stage 3 (Transformation), which is gated by knowledge diversity, not exploitation
+    intensity. At the realistic operating range (0.0 &rarr; 0.10), the reduction is approximately
+    7% — compared to 45% from expanding sharing scope in H1. The practical implication within
+    this model: structural changes to sharing scope should precede investments in exploitation
+    quality, because the ceiling on H3 returns is set by how much knowledge reached the team
+    in the first place.
   </div>
 
 
 
+<h2 id="h4-topology">5. H4 — Network Topology and the Spread of Incident Knowledge</h2>
 
+  <!-- Delta table -->
+  <div style="margin: 0.5em 0 2em 0;">
+    <table style="border-collapse: collapse; width: 100%; font-size: 0.95em;">
+      <caption style="text-align: left; font-weight: normal; margin-bottom: 0.5em; padding-bottom: 0.4em;">
+        <strong>What H4 Tests:</strong> Does org structure shape reliability independently of learning behavior?
+        Network topology is the only variable. NEIGHBOR sharing is used because it is the only condition
+        where topology determines knowledge flow.
+      </caption>
+      <thead>
+        <tr style="background: #f5f5f5;">
+          <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Parameter</th>
+          <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H1 (Baseline)</th>
+          <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H4 Experiment</th>
+          <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Sharing scenario</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">All 4 swept</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">NEIGHBOR only</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Deployment rate</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Prevention effect</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+        </tr>
+        <tr style="background: #fffde7;">
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Network topology</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Watts-Strogatz (ws_k=4)</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Complete / Erdős-Rényi / WS / Barabási-Albert / Star</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px; color: #e65100; font-weight: bold;">← THIS CHANGES</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Seeds per condition</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">Simulation duration</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
+          <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 0.9em; color: #555; margin-top: 0.4em;">
+      <strong>Why NEIGHBOR only?</strong>
+      Under LOCAL, topology is irrelevant (no knowledge travels).
+      Under GLOBAL, topology is irrelevant (everyone gets it directly).
+      Only NEIGHBOR makes topology matter — knowledge travels through network edges.
+    </p>
+  </div>
 
-
-  <!-- ============================================================ -->
-  <hr class="section-rule">
-
-  <h2 id="h4-topology">5. H4 — Network Topology and the Spread of Incident Knowledge</h2>
-
-<div style="margin: 0.5em 0 2em 0;">
-  <table style="border-collapse: collapse; width: 100%; font-size: 0.95em;">
-    <caption style="text-align: left; font-weight: normal; margin-bottom: 0.5em; padding-bottom: 0.4em;">
-      <strong>What H4 Tests:</strong> Does org structure shape reliability independently of learning behavior?
-      Network topology is the only variable. NEIGHBOR sharing is used because it is the only condition
-      where topology determines knowledge flow.
-    </caption>
-    <thead>
-      <tr style="background: #f5f5f5;">
-        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Parameter</th>
-        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H1 (Baseline)</th>
-        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">H4 Experiment</th>
-        <th style="border: 1px solid #ccc; padding: 6px 10px; text-align: left;">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Sharing scenario</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">All 4 swept</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">NEIGHBOR only</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Deployment rate</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Prevention effect</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">0.10 (fixed)</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
-      </tr>
-      <tr style="background: #fffde7;">
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Network topology</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Watts-Strogatz (ws_k=4)</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Complete / Erdős-Rényi / WS / Barabási-Albert / Star</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px; color: #e65100; font-weight: bold;">← THIS CHANGES</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Seeds per condition</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">100</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
-      </tr>
-      <tr>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">Simulation duration</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">365 days</td>
-        <td style="border: 1px solid #ccc; padding: 6px 10px;">—</td>
-      </tr>
-    </tbody>
-  </table>
-  <p style="font-size: 0.9em; color: #555; margin-top: 0.4em;">
-    <strong>Why NEIGHBOR only?</strong>
-    Under LOCAL, topology is irrelevant (no knowledge travels).
-    Under GLOBAL, topology is irrelevant (everyone gets it directly).
-    Only NEIGHBOR makes topology matter — knowledge travels through network edges.
-  </p>
-</div>
+  <!-- Intuition callout box -->
+  <div class="finding-box">
+    <strong>Intuition:</strong> In a hub-spoke org (star topology), peripheral teams
+    (teams connected to only one or two other teams in the network — like satellite offices with few
+    communication channels) are 2 hops from each other — signal decays twice before arriving. In a
+    distributed org (complete or WS), most teams are 1 hop apart — signal arrives at full strength.
+    The same pipeline, same learning parameters, same incident rate — but the organizational wiring
+    determines how much knowledge actually reaches each team. We expect more connected topologies to
+    produce fewer incidents, and star topology to perform worst.
+  </div>
 
   <h3>5.1 The Question</h3>
   <p>
@@ -1655,44 +1820,130 @@
     whether network structure is a meaningful lever for organizational reliability.
   </p>
 
-
-DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
-     ═══════════════════════════════════════════════════════════════════ -->
-<div class="finding-box">
-  <strong>Intuition:</strong> In a hub-spoke org (star topology), peripheral teams are 2 hops
-  from each other — signal decays twice before arriving. In a distributed org (complete or WS),
-  most teams are 1 hop apart — signal arrives at full strength. The same pipeline, same learning
-  parameters, same incident rate — but the organizational wiring determines how much knowledge
-  actually reaches each team. We expect more connected topologies to produce fewer incidents,
-  and star topology to perform worst.
-</div>
-
   <h3>5.2 Why Topology Matters: Signal Decay</h3>
   <p>
-    Signal decay was introduced in Section 1.3. Here we examine how it interacts with topology.
-    The key interaction is simple: denser, more distributed topologies minimize average path length,
-    which minimizes signal decay, which maximizes Stage 1 acquisition probability across the organization.
-    As introduced in Section 1.3, acquisition probability degrades with each network hop under NEIGHBOR conditions:
+    Signal decay is the mechanism by which knowledge weakens as it travels further through the network.
+    Each hop a postmortem travels reduces the chance a team actually reads and absorbs it.
+    This effect is illustrated in Figure 1.2 — Team B (1 hop from the incident source, Team A) receives
+    an attenuated signal compared to direct experience, while Team C (2 hops away) receives nothing
+    under NEIGHBOR because it falls entirely outside the one-hop sharing scope.
+    The key interaction: denser, more distributed topologies minimize average path length, which minimizes
+    signal decay, which maximizes Stage 1 acquisition probability across the organization.
+    Acquisition probability degrades with each network hop under NEIGHBOR conditions according to:
   </p>
+  <div class="formula-block">
   <pre class="formula">p_acquire = acquisition_prob × signal_decay ^ path_length</pre>
-  <p>With <code>signal_decay = 0.8</code> and <code>acquisition_prob = 0.9</code>:</p>
-  <table>
-    <thead><tr><th>Path Length</th><th>Calculation</th><th>Acquisition Probability</th></tr></thead>
+  <table class="formula-key">
+    <thead><tr><th>Variable</th><th>Meaning in this model</th></tr></thead>
     <tbody>
-      <tr><td>1 hop (direct neighbor)</td><td>0.9 × 0.8¹</td><td>0.720</td></tr>
-      <tr><td>2 hops</td><td>0.9 × 0.8²</td><td>0.576</td></tr>
-      <tr><td>3 hops</td><td>0.9 × 0.8³</td><td>0.461</td></tr>
+      <tr><td><code>p_acquire</code></td><td>Probability that the receiving team successfully acquires the incident postmortem (Stage 1 gate).</td></tr>
+      <tr><td><code>acquisition_prob</code></td><td>Base acquisition probability when the postmortem arrives. Fixed at <strong>0.9</strong>.</td></tr>
+      <tr><td><code>signal_decay</code></td><td>Per-hop attenuation factor. Fixed at <strong>0.8</strong> — each relay step multiplies the signal strength by 0.8. This is the parameter H4 directly examines: topologies that minimize average path length also minimize cumulative decay.</td></tr>
+      <tr><td><code>path_length</code></td><td>Graph distance (hops) between incident source and receiving team in the NEIGHBOR sharing graph. Topology determines this distribution: a Complete graph keeps all path lengths at 1; a Star forces peripheral teams to route through the hub, raising average path length and therefore decay.</td></tr>
     </tbody>
   </table>
-
-
-  <h3>5.3 Why the NEIGHBOR Scenario</h3>
+  <p class="formula-plain"><em>In plain terms:</em> Under NEIGHBOR sharing, every network hop a postmortem must travel costs 20% of its remaining signal strength — so network topology is not just structural decoration; it directly sets the ceiling on how much organizational learning is possible for teams that are not immediate neighbors of the incident source.</p>
+</div>
+  <p>With <code>signal_decay = 0.8</code> and <code>acquisition_prob = 0.9</code>:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Hops from Incident Source</th>
+        <th>Calculation</th>
+        <th>Acquisition Probability</th>
+        <th>Reached under NEIGHBOR?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="background: #eafaf1;">
+        <td>0 hops (source team)</td>
+        <td>N/A — implicit update</td>
+        <td>100% (direct experience)</td>
+        <td>Yes — source always learns</td>
+      </tr>
+      <tr>
+        <td>1 hop (direct neighbor)</td>
+        <td>0.9 × 0.8<sup>1</sup></td>
+        <td>72%</td>
+        <td><strong>Yes</strong> — this is NEIGHBOR’s full scope</td>
+      </tr>
+      <tr style="background: #fdecea;">
+        <td>2 hops (neighbor’s neighbor)</td>
+        <td>0.9 × 0.8<sup>2</sup> = 0.576 <em>(theoretical)</em></td>
+        <td>0% under NEIGHBOR (outside scope)</td>
+        <td><strong>No</strong> — NEIGHBOR does not relay further</td>
+      </tr>
+      <tr style="background: #fdecea;">
+        <td>3 hops</td>
+        <td>0.9 × 0.8<sup>3</sup> = 0.461 <em>(theoretical)</em></td>
+        <td>0% under NEIGHBOR (outside scope)</td>
+        <td><strong>No</strong> — NEIGHBOR does not relay further</td>
+      </tr>
+      <tr style="background: #eaf4fb;">
+        <td>Any distance (GLOBAL sharing)</td>
+        <td>0.9 × 1.0 (no decay; path_length treated as 1)</td>
+        <td>90%</td>
+        <td>Yes — all 20 teams regardless of topology</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.88em; color: #666; margin-top: 0.4em;">
+    Red rows: mathematically defined by the formula but unreachable under NEIGHBOR sharing —
+    the strategy caps transmission at one hop. Green rows show the two conditions that actually
+    propagate knowledge at scale. The theoretical multi-hop values become relevant only if a
+    future model variant allows postmortem relay chains (currently not implemented).
+  </p>
   <p>
-    Topology is only a relevant factor under NEIGHBOR conditions. Under LOCAL, network structure is irrelevant since no
-    information travels beyond the originating team. Under GLOBAL, network structure is irrelevant since information
-    reaches everyone regardless of connectivity. Under a NEIGHBOR strategy, a team's neighborhood is defined by its
-    network connections. NEIGHBOR is also the most realistic condition for a 20-team software organization:
-    knowledge rarely stays entirely local, and rarely broadcasts organization-wide.
+    Under a NEIGHBOR sharing strategy, a team 2 hops from the incident source has only a 57.6% chance
+    of acquiring the postmortem versus 72% for a 1-hop neighbor — a 20% absolute reduction per hop.
+  </p>
+  <p>
+    <strong>Does signal decay matter under NEIGHBOR sharing?</strong> Since NEIGHBOR already restricts
+    sharing to direct connections (path_length = 1), signal decay multiplies against path_length = 1
+    only. This means the decay formula reduces to: <code>p_acquire = 0.9 × 0.8¹ = 0.72</code>. Signal
+    decay still matters here: even direct neighbors have a 72% (not 100%) acquisition chance. The key
+    topology effect is not multi-hop decay but rather <em>which teams qualify as neighbors at all</em>.
+    In a star topology, when a spoke team has an incident, only the hub and zero other spokes are
+    neighbors — acquisition is limited to one team regardless of decay. In a complete graph, all 19
+    other teams are neighbors — all 19 have a 72% acquisition chance. Topology determines the pool;
+    signal decay determines the per-team probability within that pool.
+  </p>
+  <p>
+    The key insight: denser, more distributed topologies minimize average path length (and maximize
+    neighborhood size under NEIGHBOR sharing), which maximizes Stage 1 acquisition probability across
+    the organization.
+  </p>
+
+  <div class="finding-box" style="border-left: 4px solid #2980b9; background: #eaf4fb; padding: 1em 1.2em; margin: 1.5em 0;">
+    <strong>An important clarification: NEIGHBOR scope and signal decay are distinct mechanisms.</strong>
+    <p style="margin: 0.6em 0 0 0;">
+      Under NEIGHBOR sharing, knowledge only travels <em>one hop</em> — directly adjacent teams.
+      Signal decay applies at that one hop, reducing base acquisition probability from 90% to 72%.
+      Teams two or more hops away receive <em>nothing</em> under NEIGHBOR regardless of signal decay —
+      they are simply outside the sharing scope entirely. The decay formula does not reach them because
+      the postmortem is never transmitted that far.
+    </p>
+    <p style="margin: 0.6em 0 0 0;">
+      This is why topology matters so much under NEIGHBOR: the distance between teams determines who
+      receives any knowledge at all. In a star topology, peripheral teams are 2 hops from each other
+      through the hub — meaning they receive nothing from each other’s incidents. In a complete or
+      small-world topology, most teams are 1 hop apart, so knowledge circulates broadly. The signal
+      decay rate (0.8) modulates the <em>probability</em> of that one-hop transmission; the topology
+      determines <em>whether</em> a transmission path exists at all.
+    </p>
+    <p style="margin: 0.6em 0 0 0; font-style: italic; font-size: 0.92em; color: #555;">
+      See Figure 1.2 in the Introduction for a visual of Team A (incident source), Team B (1 hop —
+      reaches 72% acquisition), and Team C (2 hops — receives nothing under NEIGHBOR).
+    </p>
+  </div>
+  <h3>5.3 Experimental Setup</h3>
+  <p>
+    Topology is only a relevant factor under NEIGHBOR conditions. Under LOCAL, network structure is
+    irrelevant since no information travels beyond the originating team. Under GLOBAL, network structure
+    is irrelevant since information reaches everyone regardless of connectivity. Under a NEIGHBOR
+    strategy, a team's neighborhood is defined by its network connections. NEIGHBOR is also the most
+    realistic condition for a 20-team software organization: knowledge rarely stays entirely local, and
+    rarely broadcasts organization-wide.
   </p>
 
   <h4>Table 5.1: H4 Experimental Parameters</h4>
@@ -1744,8 +1995,14 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
     </tbody>
   </table>
 
-
-  <h3>5.4 The Five Network Topologies</h3>
+  <h3>5.4 Topologies Tested</h3>
+  <p>
+    The 20 teams remain the same across all topology experiments — we are not adding or removing teams.
+    What changes is only the pattern of connections between them. A complete graph (all 20 teams directly
+    connected to each other) allows 190 possible direct connections between team pairs; a star graph uses
+    only 19. All five topologies below use the same 20 agents, the same learning parameters, and the same
+    incident probabilities.
+  </p>
 
   <h4>5.4.1 Complete Graph — 273 Incidents</h4>
   <div class="ascii-diagram">    [A]---[B]---[C]
@@ -1755,10 +2012,10 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
     [D]---[E]---[F]
       (every node connects to every other node)</div>
   <p>
-    <strong>What it is:</strong> Every team is directly connected to every other team. With 20 teams, this
-    means 190 unique connections. <strong>Real-world analog:</strong> A tiny startup where everyone attends
-    every meeting — there are no silos. <strong>Result:</strong> Every team is exactly one hop from the source
-    of every incident. Prevention K = 0.990 — if one team sees a failure, all teams benefit.
+    <strong>What it is:</strong> Every team is directly connected to every other team. With 20 teams,
+    this means 190 unique connections. <strong>Real-world analog:</strong> A tiny startup where everyone
+    attends every meeting — there are no silos. <strong>Result:</strong> Every team is exactly one hop
+    from the source of every incident. Prevention K = 0.990 — if one team sees a failure, all teams benefit.
   </p>
 
   <h4>5.4.2 Erdős-Rényi Random Graph — 323 Incidents</h4>
@@ -1769,11 +2026,11 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
                [G]-[H]
       (connections formed with 30% probability)</div>
   <p>
-    <strong>What it is:</strong> Each of the 190 possible team pairs is connected with probability p = 0.3.
-    <strong>Real-world analog:</strong> Relationships that formed by chance — accumulated coincidence rather
-    than deliberate org design. <strong>Result:</strong> ER outperforms WS not because randomness is
-    superior to structure, but because <em>density wins</em>. The lesson is that connection count matters
-    independently of topology pattern.
+    <strong>What it is:</strong> Each of the 190 possible team pairs is connected with probability
+    p = 0.3. <strong>Real-world analog:</strong> Relationships that formed by chance — accumulated
+    coincidence rather than deliberate org design. <strong>Result:</strong> ER outperforms WS not
+    because randomness is superior to structure, but because <em>density wins</em>. The lesson is that
+    connection count matters independently of topology pattern.
   </p>
 
   <h4>5.4.3 Watts-Strogatz Small-World — 336 Incidents (Baseline)</h4>
@@ -1784,11 +2041,12 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
     [19]            [7]
          ...</div>
   <p>
-    <strong>What it is:</strong> Teams are arranged in a conceptual ring, each connected to its 4 nearest
-    neighbors. Then, 10% of connections are randomly rewired to create long-range shortcuts. <strong>Real-world
-    analog:</strong> A 20-team software company with a squad structure — tightly-knit sub-groups with a few
-    informal cross-team relationships. This is the most realistic topology and serves as the baseline.
-    K = 0.890 indicates strong but incomplete organizational learning.
+    <strong>What it is:</strong> Teams are arranged in a conceptual ring, each connected to its 4
+    nearest neighbors. Then, 10% of connections are randomly rewired to create long-range shortcuts.
+    <strong>Real-world analog:</strong> A 20-team software company with a squad structure —
+    tightly-knit sub-groups with a few informal cross-team relationships. This is the most realistic
+    topology and serves as the baseline. K = 0.890 indicates strong but incomplete organizational
+    learning.
   </p>
 
   <h4>5.4.4 Barabási-Albert Hub-Spoke — 346 Incidents</h4>
@@ -1801,16 +2059,19 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
      [F] [G] [H]
       (new nodes attach preferentially to well-connected nodes)</div>
   <p>
-    <strong>What it is:</strong> Teams join the network one at a time, each connecting to ba_m = 2 existing
-    teams with probability proportional to those teams' existing degree (the "rich get richer" mechanism).
-    Result: 2–3 hub teams with 10–12 connections each, and 12–14 peripheral teams with only 2–3 connections.
-    <strong>Real-world analog:</strong> The platform team or SRE function that every product team depends on.
-    All product teams have a relationship with platform; product teams have few relationships with each other.
-    Knowledge concentrates at hubs but cannot efficiently diffuse outward to the spoke majority.
+    <strong>What it is:</strong> Teams join the network one at a time, each connecting to ba_m = 2
+    existing teams with probability proportional to those teams' existing degree (the "rich get richer"
+    mechanism). Result: 2–3 hub teams with 10–12 connections each, and 12–14 peripheral teams
+    (teams connected to only one or two other teams in the network — like satellite offices with few
+    communication channels) with only 2–3 connections.
+    <strong>Real-world analog:</strong> The platform team or SRE function that every product team
+    depends on. All product teams have a relationship with platform; product teams have few relationships
+    with each other. Knowledge concentrates at hubs but cannot efficiently diffuse outward to the spoke
+    majority.
   </p>
   <p>
-    <strong>The ba_m crossover:</strong> A parameter sweep reveals a crossover at ba_m = 3. Below this value,
-    BA performs worse than WS. Above ba_m = 3, BA begins to outperform WS as hubs become genuine
+    <strong>The ba_m crossover:</strong> A parameter sweep reveals a crossover at ba_m = 3. Below this
+    value, BA performs worse than WS. Above ba_m = 3, BA begins to outperform WS as hubs become genuine
     accelerators.
   </p>
 
@@ -1820,15 +2081,15 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
       [A][B][C][D]...[S]
       (all 19 spokes connect only to hub)</div>
   <p>
-    <strong>What it is:</strong> One team serves as the central hub. All 19 other teams connect exclusively
-    to the hub. No spoke connects to any other spoke. <strong>Real-world analog:</strong> Extreme
-    centralization — every incident debrief goes through the SRE lead, no peer-to-peer incident sharing.
-    K = 0.670, the lowest of any topology. When a spoke team experiences a failure, its neighborhood
-    consists of the hub and zero other spokes. Knowledge concentrates at the center and never diffuses to
-    where incidents predominantly occur.
+    <strong>What it is:</strong> One team serves as the central hub. All 19 other teams connect
+    exclusively to the hub. No spoke connects to any other spoke. <strong>Real-world analog:</strong>
+    Extreme centralization — every incident debrief goes through the SRE lead, no peer-to-peer incident
+    sharing. K = 0.670, the lowest of any topology. When a spoke team experiences a failure, its
+    neighborhood consists of the hub and zero other spokes. Knowledge concentrates at the center and
+    never diffuses to where incidents predominantly occur.
   </p>
 
-  <h3>5.5 Results Summary</h3>
+  <h3>5.5 Results</h3>
   <table>
     <thead><tr><th>Topology</th><th>Total Incidents</th><th>Prevention K</th><th>Real-World Analog</th></tr></thead>
     <tbody>
@@ -1841,33 +2102,33 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
   </table>
 
   <div class="result-highlight">
-    The range spans 109 incidents — a 40% difference in total incidents between the best and worst topologies, with
-    identical agents, identical incident probabilities, and identical learning parameters. Topology alone accounts for a
-    40% variance in organizational reliability.
+    The range spans 109 incidents — a 40% difference in total incidents between the best and worst
+    topologies, with identical agents, identical incident probabilities, and identical learning
+    parameters. Topology alone accounts for a 40% variance in organizational reliability.
   </div>
 
-  <h3>5.6 Does Every Team Need to Know About Every Incident?</h3>
+  <h3>5.6 Analysis</h3>
   <p>
-    The model handles this through cosine similarity filtering. Each incident has a feature vector; each team
-    has a competency profile. The transformation probability is scaled by the cosine similarity between team and incident.
-    A frontend team that encounters a deep storage incident will have low similarity, and therefore a low transformation
-    probability.
+    The model handles relevance filtering through cosine similarity: each incident has a feature vector;
+    each team has a competency profile. The transformation probability is scaled by the cosine similarity
+    between team and incident. A frontend team that encounters a deep storage incident will have low
+    similarity, and therefore a low transformation probability. This means not every team needs to know
+    about every incident — the model naturally discounts irrelevant knowledge transfer. The topology
+    effect remains after this filtering: even with similarity-gated transformation, denser topologies
+    outperform sparser ones because the pool of potentially-relevant neighbors is larger.
   </p>
 
   <h3>5.7 Conclusion</h3>
   <div class="finding-box">
     <p>
-      Under the conditions modeled using NEIGHBOR sharing with 20 teams, network topology alone accounts for a 40%
-      range in total incidents — from 273 (complete graph) to 382 (star) — with identical agents, identical incident
-      rates, and identical learning parameters. H4 is supported: topology is a meaningful determinant of organizational
-      reliability in this model.
-    </p>
-    <p>
-      The findings are directionally consistent with network theory (Watts &amp; Strogatz, 1998; Reagans &amp; McEvily, 2003):
-      evenly distributed connectivity outperforms hub-spoke structures, and extreme centralization (star topology) is
-      the worst-performing configuration. Whether these magnitudes hold in real software organizations depends on
-      whether real knowledge flow follows network adjacency as closely as this model assumes — a simplification
-      that future empirical work could test.
+      Under the conditions modeled, H4 is confirmed. Using NEIGHBOR sharing with 20 teams, network
+      topology alone accounts for a 40% range in total incidents — from 273 (complete graph) to 382
+      (star) — with identical agents, identical incident rates, and identical learning parameters.
+      Topology is a meaningful determinant of organizational reliability in this model: evenly
+      distributed connectivity outperforms hub-spoke structures, and extreme centralization (star
+      topology) is the worst-performing configuration. Whether these magnitudes hold in real software
+      organizations depends on whether real knowledge flow follows network adjacency as closely as
+      this model assumes — a simplification that future empirical work could test.
     </p>
   </div>
 
@@ -1875,12 +2136,7 @@ DELTA 1: H4 intuition box — insert after 5.1 paragraphs, before 5.2 h3
 
 
 
-
-
-  <!-- ============================================================ -->
-  <hr class="section-rule">
-
-  <h2 id="ablations-exp11-exp12">6. Ablation Tests — exp11 (Knowledge Decay) &amp; exp12 (Source Asymmetry)</h2>
+<h2 id="ablations-exp11-exp12">6. Ablation Tests — exp11 (Knowledge Decay) &amp; exp12 (Source Asymmetry)</h2>
 
 <p>
   This section applies ablation methodology to two auxiliary design choices built into the H1 model — a
@@ -2035,11 +2291,19 @@ Stage 4: p_exploit = 0.60</pre>
     The decay component of the agent state update is:
   </p>
 
-<pre class="formula">
-  K(t)  =  K(t-1) × (1 − decay_rate)
-
-  where  decay_rate = 0.001  (default; applied every timestep = 1 simulated day)
-</pre>
+<div class="formula-block">
+  <pre class="formula">K(t)  =  K(t-1) &times; (1 &minus; decay_rate)</pre>
+  <table class="formula-key">
+    <thead><tr><th>Variable</th><th>Meaning in this model</th></tr></thead>
+    <tbody>
+      <tr><td><code>K(t)</code></td><td>The agent’s Prevention Knowledge score at the end of timestep <em>t</em> (one simulated day). Applied independently to every element of every agent’s Prevention Knowledge vector.</td></tr>
+      <tr><td><code>K(t-1)</code></td><td>The same agent’s Prevention Knowledge score at the previous timestep — the value before today’s decay (and any learning events) are applied.</td></tr>
+      <tr><td><code>decay_rate</code></td><td>Daily fractional erosion of accumulated knowledge. Default value: <strong>0.001</strong> per timestep. Models staff turnover, process atrophy, and the slow erosion of practices that are not continually reinforced. Applied unconditionally every day — it does not wait for incidents to occur.</td></tr>
+      <tr><td><code>(1 &minus; decay_rate)</code></td><td>Retention factor per day: <strong>0.999</strong>. Over 365 days compounded, a unit of knowledge retained is 0.999<sup>365</sup> ≈ 0.694 — meaning roughly 31% of knowledge earned at the start of the year erodes by year-end if never replenished.</td></tr>
+    </tbody>
+  </table>
+  <p class="formula-plain"><em>In plain terms:</em> Every single day, each team quietly loses a small fraction (0.1%) of its accumulated incident knowledge, regardless of whether any incident occurred — representing the real-world reality that prevention practices fade unless actively reinforced, and whether this slow drain materially affects outcomes depends on how fast sharing-driven learning can outpace it.</p>
+</div>
 
   <p>
     This is applied independently to every element of every agent's
@@ -2346,10 +2610,24 @@ Stage 4: p_exploit = 0.60</pre>
   &nbsp;&nbsp;→ Team A's effective learning probability becomes the product of all four stage gates:<br>
 </div>
 
-<pre class="formula">P(Team A learns from own incident) = P_acquire × P_assimilate × P_transform × P_exploit
-                                    = 0.9 × 0.70 × [cosine gate] × 0.60
-                                    = 0.378 × [cosine gate]
-                                    &lt; 1.0   (strictly, for any cosine gate value &lt; 1)</pre>
+<div class="formula-block">
+  <pre class="formula">P(Team A learns from own incident)
+    = P_acquire &times; P_assimilate &times; P_transform &times; P_exploit
+    = 0.9 &times; 0.70 &times; [cosine gate] &times; 0.60
+    = 0.378 &times; [cosine gate]
+    &lt; 1.0   (strictly, for any cosine gate value &lt; 1)</pre>
+  <table class="formula-key">
+    <thead><tr><th>Variable</th><th>Meaning in this model</th></tr></thead>
+    <tbody>
+      <tr><td><code>P_acquire</code></td><td><strong>Stage 1</strong> — probability the team notices and picks up the postmortem signal. Fixed at <strong>0.9</strong> for the source team at 0 hops (no decay applied). In the asymmetry-ON default, the source team skips this stage entirely and learns with certainty; this value only appears when asymmetry is switched OFF.</td></tr>
+      <tr><td><code>P_assimilate</code></td><td><strong>Stage 2</strong> — probability the team internalizes the raw postmortem into its knowledge representation. Fixed at <strong>0.70</strong> for all learners. Represents the cognitive/organizational friction of processing an incident writeup into actionable understanding.</td></tr>
+      <tr><td><code>P_transform</code> <br><em>(cosine gate)</em></td><td><strong>Stage 3</strong> — a similarity gate: the postmortem’s knowledge vector must exceed a cosine-similarity threshold with the receiving team’s domain representation. For a team processing its own incident this gate passes frequently — but not certainly. The gate value varies by incident and team; it is shown symbolically rather than as a fixed number.</td></tr>
+      <tr><td><code>P_exploit</code></td><td><strong>Stage 4</strong> — probability the team successfully translates the transformed knowledge into a concrete update to its Prevention Knowledge vector. Fixed at <strong>0.60</strong>. Models the last-mile challenge: even correctly understood lessons are not always operationalized into changed practice.</td></tr>
+      <tr><td><code>0.378 × [cosine gate]</code></td><td>Upper bound on per-attempt success probability once the cosine gate is excluded. The product of the three fixed-probability stages is 0.9 × 0.70 × 0.60 = 0.378; the actual probability is this value multiplied by whatever the cosine gate passes — always strictly below 1.0.</td></tr>
+    </tbody>
+  </table>
+  <p class="formula-plain"><em>In plain terms:</em> When the asymmetry shortcut is removed and Team A must learn about its own incident through the same probabilistic pipeline as everyone else, it faces three fixed friction points (notice it, understand it, act on it) plus a domain-fit check — meaning the team has at most a 37.8% chance of completing all non-similarity stages in a single attempt, explaining why losing the direct-learning privilege measurably increases incident counts under LOCAL sharing.</p>
+</div>
 
 <p>
   The cosine gate passes an incoming postmortem when its knowledge vector is sufficiently similar to the
@@ -3245,25 +3523,36 @@ Asymmetry OFF:  P(learning event) = 0.9 × 0.70 × [cosine gate] × 0.60  &lt;  
 
   <h4>What We Built and Validated</h4>
   <p>
-    This thesis produced a computational agent-based model of 20 software engineering teams sharing
-    incident knowledge through a four-stage absorptive capacity pipeline — Acquisition, Assimilation,
-    Transformation, and Exploitation — grounded in Zahra &amp; George (2002). The simulation was not
+    This thesis produced a computational agent-based model (a computer simulation where individual
+    teams follow rules and their combined behavior produces the organizational outcome we measure) of
+    20 software engineering teams sharing incident knowledge through a four-stage absorptive capacity
+    pipeline (the four-step process through which teams acquire, understand, connect, and apply incident
+    knowledge) — Acquisition, Assimilation, Transformation, and Exploitation — grounded in
+    Zahra &amp; George (2002). The simulation was not
     designed to prescribe organizational behavior; it was designed to provide a controlled experimental
     environment for studying how structural and behavioral variables interact in a knowledge-sharing system
     that would be difficult or impossible to manipulate in a live organization.
   </p>
   <p>
-    The model was pre-specified against three validation criteria before experiments were run: (1) H1
-    ordering emergence by simulation day 30, (2) Prevention Knowledge saturation by day 90 under the
-    GLOBAL sharing condition, and (3) full topology ordering under the NEIGHBOR condition. All four
-    experimental hypotheses were supported. The H1 ordering — GLOBAL &lt; NEIGHBOR &lt; LOCAL &lt; NONE
-    — held across 13 experimental conditions, 6 sensitivity sweeps, and 2 ablation tests. No
-    parameter combination tested reversed this ordering.
+    Before any experiments were run, three specific outcomes were written down that the model would
+    need to produce in order to be considered a credible implementation of the theory: the incident-count
+    ordering between sharing strategies had to emerge by simulation day 30; knowledge accumulation had to
+    approach saturation by day 90 under the broadest sharing condition (GLOBAL); and network topology had
+    to produce a consistent incident-count ordering under the NEIGHBOR condition. All three were satisfied,
+    and all four experimental hypotheses were supported.
+  </p>
+  <p>
+    The central finding held in every test: organizations that share incident knowledge more broadly
+    experience fewer incidents. In total incident counts, the ordering ran
+    NONE &gt; LOCAL &gt; NEIGHBOR &gt; GLOBAL — NONE (no sharing at all) produced the most incidents,
+    GLOBAL (every team learns from every incident) produced the fewest. This ordering was confirmed
+    across a range of parameter variations, repeated random runs, and tests that removed individual
+    model components to check whether the result depended on them. No configuration tested reversed it.
   </p>
   <p>
     The primary scientific contribution of this work is the simulator itself: a validated, reproducible
-    computational tool that operationalizes absorptive capacity theory in a software incident learning
-    context. The fact that the model reproduces theoretically predicted orderings provides evidence
+    computational tool that operationalizes absorptive capacity theory (translates the theory into working
+    computer code that can run experiments) in a software incident learning context. The fact that the model reproduces theoretically predicted orderings provides evidence
     that it is a reasonable implementation of the underlying theory, and a credible basis for the
     exploratory findings described below.
   </p>
@@ -3424,6 +3713,9 @@ Asymmetry OFF:  P(learning event) = 0.9 × 0.70 × [cosine gate] × 0.60  &lt;  
     </tbody>
   </table>
 
+<!-- SECTION 11.3 REMOVED FROM RENDERED REPORT (author decision, 2026-04-15)
+     Preserved here in source for potential future use.
+
   <h3>11.3 Model Extensions</h3>
   <p>
     The following extensions would increase the simulator's scientific credibility and expand
@@ -3458,6 +3750,7 @@ Asymmetry OFF:  P(learning event) = 0.9 × 0.70 × [cosine gate] × 0.60  &lt;  
       the model more sensitive to realistic turnover scenarios.
     </li>
   </ul>
+-->
 
 
 
