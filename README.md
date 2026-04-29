@@ -82,7 +82,7 @@ cd 02-Framework-Code && python3 publication_tests.py
 
 ---
 
-## Bibliography (29 papers)
+## Bibliography
 
 ### Absorptive Capacity & Organizational Learning
 
@@ -145,7 +145,3 @@ cd 02-Framework-Code && python3 publication_tests.py
 | 30 | Grimm et al. (2020) | ODD protocol — standard for documenting ABMs |
 
 ---
-
-| Chapters 1, 2, 5, 6 | ⬜ Not started |
-
-**Last Updated:** April 14, 2026
