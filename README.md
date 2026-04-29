@@ -146,17 +146,6 @@ cd 02-Framework-Code && python3 publication_tests.py
 
 ---
 
-## Status
-
-| Item | Status |
-|---|---|
-| Simulation code | ✅ Complete |
-| All 13 experiments | ✅ Complete |
-| Publication-level validation | ✅ Complete |
-| HTML report (index.html) | ✅ Updated per Apr 14 advisor feedback |
-| Chapter 3 section drafts | ✅ All 8 sections drafted |
-| Chapter 3 final prose | 🔄 In progress |
-| Chapter 4 | ⬜ Not started |
 | Chapters 1, 2, 5, 6 | ⬜ Not started |
 
 **Last Updated:** April 14, 2026
