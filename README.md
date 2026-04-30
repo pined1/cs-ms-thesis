@@ -11,7 +11,7 @@
 
 ```
 CS MS/
-├── 01-Papers/              # Paper notes and reading list (29 papers)
+├── 01-Papers/              # Paper notes (36 papers, all read)
 ├── 02-Framework-Code/      # Python ABM simulator + experiments
 ├── 03-Experiments/         # Experiment documentation and results summaries
 ├── 06-Thesis-Proposal/     # Four-pager committee proposal (LaTeX + PDF)
@@ -82,66 +82,82 @@ cd 02-Framework-Code && python3 publication_tests.py
 
 ---
 
-## Bibliography
+## Bibliography (36 papers, all read)
 
-### Absorptive Capacity & Organizational Learning
+### Absorptive Capacity & Organizational Learning (7)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 1 | Cohen & Levinthal (1990) | Absorptive capacity foundation — prior knowledge enables new knowledge |
-| 2 | Zahra & George (2002) | 4-stage ACAP pipeline — core theory of this thesis |
-| 3 | March (1991) | Exploration vs. exploitation tradeoff |
-| 4 | Argote et al. (2021) | Org learning processes and outcomes review |
-| 5 | Nooteboom et al. (2007) | Cognitive distance and absorptive capacity |
-| 6 | Szulanski (1996) | Internal stickiness — why knowledge transfer fails within firms |
+| 1 | Cohen & Levinthal (1990) | You can only absorb what you already partly know — prior knowledge gates everything |
+| 2 | Zahra & George (2002) | The four-stage ACAP pipeline: acquisition → assimilation → transformation → exploitation |
+| 3 | March (1991) | Exploration vs. exploitation; heterogeneous populations beat homogeneous ones because diversity prevents premature convergence |
+| 4 | Argote & Miron-Spektor (2011) | Create / retain / transfer — the broadest organizing framework for org learning |
+| 5 | Nooteboom et al. (2007) | Inverted-U with cognitive distance: absorptive capacity is the bottleneck, moderated by distance |
+| 6 | Szulanski (1996) | Knowledge transfer fails on cognitive barriers (causal ambiguity, absorptive capacity), not motivation |
+| 7 | Levinthal (1997) | Diminishing returns to local search on rugged fitness landscapes (frame as adaptation, not knowledge) |
 
-### Learning from Incidents
+### Learning from Incidents (11)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 7 | Cook (1998) | How complex systems fail — no single root cause |
-| 8 | Lunney & Lueder (2016) | Postmortem culture — Google SRE chapter |
-| 9 | Allspaw (2012) | Blameless postmortems at Etsy |
-| 10 | Dogga et al. (2023) | AutoARTS incident taxonomy at Microsoft Azure scale |
-| 11 | Drupsteen & Guldenmund (2014) | What learning from incidents actually means |
-| 12 | Margaryan et al. (2017) | Research agenda for learning from incidents |
-| 13 | Reed (2019) | The fix-it treadmill problem in software |
-| 14 | Dingsøyr (2005) | Postmortem reviews in software engineering |
-| 15 | Dekker (2014) | Human error is systemic, not individual |
+| 8 | Cook (1998) | "Root cause" is a story we construct after the fact, not an objective property of failure |
+| 9 | Leveson (2004) | STAMP — accidents emerge from inadequate control, not chains of component failures |
+| 10 | Lunney & Lueder (2016) | Google's blameless postmortem culture: shift the question from "who?" to "why did the system allow this?" |
+| 11 | Allspaw (2012) | Etsy's Just Culture — blamelessness as the operating condition for honest sharing |
+| 12 | Dogga et al. (2023) | ARTS taxonomy from 2,000+ Azure incidents — used as the type system for synthetic incidents |
+| 13 | Drupsteen & Guldenmund (2014) | Sharing-and-storing is the most underexposed sub-process in incident learning |
+| 14 | Margaryan et al. (2017) | Research agenda for LFI; identifies simulation as underused but appropriate methodology |
+| 15 | Reed (2019) | High performers use postmortems to patch mental models, not to generate fix lists (91% miss this) |
+| 16 | Dingsøyr (2005) | Only 1-in-5 software projects do postmortems; zero of 19 companies are satisfied with their process |
+| 17 | Dekker (2014) | New View — human error is a symptom of systemic conditions; blame drives reporting underground |
+| 18 | Sujan, Huang & Braithwaite (2017) | Safety-II critique — also learn from successful operations (Ch 5 limitations citation) |
 
-### Network Structure
+### Network Structure (7)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 16 | Watts & Strogatz (1998) | Small-world networks — WS topology used as default |
-| 17 | Barabási & Albert (1999) | Scale-free networks — BA topology, ba_m crossover finding |
-| 18 | Conway (1968) | Org structure mirrors system structure |
-| 19 | MacCormack et al. (2012) | Empirical test of the mirroring hypothesis |
-| 20 | Hansen (1999) | Weak ties and cross-unit knowledge sharing |
-| 21 | Reagans & McEvily (2003) | Network cohesion and range both facilitate knowledge transfer |
+| 19 | Watts & Strogatz (1998) | Small-world topology: high local clustering + short global paths via a few shortcuts |
+| 20 | Barabási & Albert (1999) | Scale-free topology emerges from preferential attachment — hubs form naturally |
+| 21 | Conway (1968) | System architectures mirror the communication structures of the organizations that build them |
+| 22 | MacCormack et al. (2012) | Conway's Law empirically confirmed: tightly-coupled orgs produce 3–6× higher propagation costs |
+| 23 | Hansen (1999) | Weak ties help search, hurt complex transfer — postmortems are codified, so they cross weak ties cleanly |
+| 24 | Reagans & McEvily (2003) | Optimal networks combine cohesion and range — exactly Watts–Strogatz topology |
+| 25 | Borgatti & Foster (2003) | Network research typology — Ch 2 positioning citation, not the cohesion+reach engine |
 
-### Knowledge Transfer & Decay
+### Knowledge Transfer & Decay (2)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 22 | Darr, Argote & Epple (1995) | Knowledge decay in service organizations — grounds decay_rate parameter |
-| 23 | Edmondson (1999) | Psychological safety — justifies blameless sharing assumption |
+| 26 | Darr, Argote & Epple (1995) | Organizational knowledge depreciates without reinforcement — empirical grounding for the δ parameter |
+| 27 | Edmondson (1999) | Psychological safety is the strongest predictor of team learning behavior |
 
-### DevOps & Software Reliability
+### DevOps & Software Reliability (2)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 24 | Forsgren et al. (2018) | DORA research — deployment frequency vs. change failure rate |
-| 25 | Kim et al. (2016) | The DevOps Handbook — Three Ways, local-to-global learning |
+| 28 | Forsgren et al. (2018) | DORA: high performers achieve sub-1-hour MTTR; the gap between tiers is widening |
+| 29 | Kim et al. (2016) | Three Ways: Flow, Feedback, Continual Learning — local discoveries become global improvements |
 
-### Agent-Based Modeling Methodology
+### Agent-Based Modeling Methodology (7)
 
-| # | Paper | Key Contribution |
+| # | Paper | One-Line Takeaway |
 |---|---|---|
-| 26 | Bonabeau (2002) | ABM methods for simulating human systems |
-| 27 | Epstein (1999) | Generative social science — "if you didn't grow it, you didn't explain it" |
-| 28 | Harrison et al. (2007) | ABM in org/management research |
-| 29 | Sargent (2020) | Verification and validation of simulation models |
-| 30 | Grimm et al. (2020) | ODD protocol — standard for documenting ABMs |
+| 30 | Bonabeau (2002) | ABM is the right tool for emergent phenomena from heterogeneous, nonlinear interactions |
+| 31 | Epstein (1999) | "If you didn't grow it, you didn't explain its emergence" — generative social science |
+| 32 | Harrison et al. (2007) | Simulation is a legitimate primary research method when controlled experiments are infeasible |
+| 33 | Carley (1992) | Foundational ABM of org learning — knowledge loss × task interdependence drives net learning |
+| 34 | Müller, Kudic & Vermeulen (2021) | ABM precedent for knowledge diffusion in org networks (different domain, same lineage) |
+| 35 | Sargent (2020) | Validity is purpose-relative — exploratory models require lower accuracy thresholds than predictive ones |
+| 36 | Grimm et al. (2020) | ODD protocol — the seven-element standard for documenting agent-based models |
+
+---
+
+## Bibliography Verdict
+
+The intellectual story across four branches:
+- **Absorptive capacity spine:** Cohen & Levinthal → Zahra & George → Argote & Miron-Spektor → Nooteboom → Szulanski → March → Levinthal
+- **Network science:** Watts & Strogatz, Barabási & Albert, Hansen, Reagans & McEvily, Borgatti & Foster, Conway, MacCormack
+- **Software-engineering practice:** Cook, Leveson, Forsgren, Kim, Dogga, Reed, Lunney & Lueder, Allspaw, Edmondson, Dingsøyr, Drupsteen & Guldenmund, Margaryan, Dekker
+- **ABM methodology:** Bonabeau, Epstein, Harrison, Sargent, Grimm, Carley, Müller
 
 ---
