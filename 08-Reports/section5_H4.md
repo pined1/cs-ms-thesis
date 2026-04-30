@@ -2,7 +2,7 @@
 
 ## 5.1 The Question
 
-Does the shape of how teams are connected affect how well incident knowledge spreads? When a team experiences a failure and learns something from it, who else learns? The answer, it turns out, depends almost entirely on the topology of the organizational network — the pattern of connections between teams. H4 investigates whether network structure is a meaningful lever for organizational reliability, or merely an architectural curiosity.
+Does the shape of how teams are connected affect how well incident knowledge spreads? When a team experiences a failure and learns something from it, who else learns? The answer, it turns out, depends almost entirely on the topology of the organizational network — the pattern of connections between teams. H4 investigates whether network structure affects incident knowledge spread—and thus whether it is a meaningful lever for organizational reliability.
 
 The hypothesis: **evenly distributed connectivity will outperform centralized hub-spoke arrangements in total incidents prevented.**
 
@@ -61,7 +61,7 @@ NEIGHBOR is also the most realistic condition for a 20-team software organizatio
 
 **Why test it:** The theoretical ceiling. This is the best connectivity that any organization can achieve, and it establishes the upper bound for knowledge diffusion.
 
-**Why it produces 273 incidents:** Every team is exactly one hop from the source of every incident. Signal decay applies at its minimum (0.8¹ = 0.80). Knowledge reaches the maximum number of teams at the highest possible fidelity. The Prevention Knowledge score of **K = 0.990** reflects near-total organizational learning — essentially, if one team sees a failure, all teams benefit.
+**Why it produces 273 incidents:** Every team is exactly one hop from the source of every incident. Signal decay applies at its minimum (0.8¹ = 0.80). Knowledge reaches the maximum number of teams at the highest possible fidelity.
 
 ---
 
@@ -76,7 +76,7 @@ NEIGHBOR is also the most realistic condition for a 20-team software organizatio
       (connections formed with 30% probability)
 ```
 
-**What it is:** Each of the 190 possible team pairs is connected with probability `p = 0.3`. The resulting graph is random — no structural principle governs who knows whom.
+**What it is:** Each of the 190 possible team pairs is connected with probability `p = 0.3`. The resulting graph is random — no structural principle governs who knows whom. Like the Complete graph, this uses the same 20 teams; only the connection pattern varies with p = 0.3 across the 100 seeds.
 
 **Real-world analog:** Relationships that formed by chance. The engineers who happened to sit together at the company offsite. The two teams that were accidentally merged for a quarter and stayed in touch. No deliberate org design — just accumulated coincidence.
 
@@ -160,7 +160,7 @@ NEIGHBOR is also the most realistic condition for a 20-team software organizatio
 | Barabási-Albert Hub-Spoke | 347 | 0.835 | Platform team as central node |
 | Star | 382 | 0.670 | Everything through one person |
 
-The range spans 109 incidents — a 40% difference in total incidents between the best and worst topologies, with identical agents, identical incident probabilities, and identical learning parameters. **Topology alone accounts for a 40% variance in organizational reliability.**
+The range spans approximately 109 incidents — from 273 (Complete) to 382 (Star). Topology alone accounts for a 40% difference in organizational reliability when comparing the best and worst configurations.
 
 ---
 
