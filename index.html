@@ -331,17 +331,13 @@ travels through the network reduces the acquisition probability of the receiving
       <tr><td><code>p_acquire</code></td><td>Probability that the receiving team successfully acquires (Stage 1) the incident postmortem signal; the gate that must open before any learning can proceed.</td></tr>
       <tr><td><code>acquisition_prob</code></td><td>Base probability of acquiring a postmortem when it arrives. Fixed at <strong>0.9</strong> across all experiments — reflects a well-run postmortem process that almost always reaches the intended audience when delivered.</td></tr>
       <tr><td><code>signal_decay</code></td><td>Per-hop decay factor applied to the postmortem signal as it travels through the team network. Fixed at <strong>0.8</strong>; each intermediate relay attenuates the signal by 20%.</td></tr>
-      <tr><td><code>path_length</code></td><td>Number of network hops between the incident-owning team and the receiving team. Under GLOBAL sharing (all 20 teams receive the postmortem), every team is treated as <code>path_length = 1</code>; under NEIGHBOR sharing (only directly connected teams receive the postmortem), path length reflects actual graph distance.</td></tr>
+      <tr><td><code>path_length</code></td><td>Number of network hops between the incident-owning team and the receiving team. Used only under NEIGHBOR sharing, where path length reflects actual graph distance. Under GLOBAL sharing the postmortem is broadcast through organization-wide channels (e.g., a shared incident-management platform or company-wide channel) and reaches every team without traversing intermediaries — signal decay does not apply.</td></tr>
     </tbody>
   </table>
   <p class="formula-plain"><em>In plain terms:</em> The further away a team sits from the incident source in the communication network, the less likely it is to successfully pick up the postmortem — a 20% drop per hop means a team two hops away starts at only 57.6% acquisition probability even if the base rate is 90%.</p>
 </div>
 
-<p>Under GLOBAL sharing, every team is treated as <code>path_length = 1</code> regardless of their actual network position —
-the signal does not decay with distance. Under NEIGHBOR sharing, only teams that are direct connections
-(<code>path_length = 1</code>) receive the postmortem at all, and the decay formula applies to those transmissions.
-Signal decay is introduced here because it is a structural property of the NEIGHBOR strategy; its effect on
-organizational outcomes is examined directly in H4.</p>
+<p>Under GLOBAL sharing, the postmortem reaches every team directly through organization-wide channels, so no signal decay applies — the acquisition probability is simply the base rate (<code>p_acquire = acquisition_prob = 0.9</code>). Under NEIGHBOR sharing, only teams that are direct connections (<code>path_length = 1</code>) receive the postmortem at all, and the decay formula applies to those transmissions. Signal decay is therefore a structural property of the NEIGHBOR strategy alone; its effect on organizational outcomes is examined directly in H4.</p>
 <p>Figure 1.2 illustrates how sharing scope determines which teams enter Stage 1.</p>
 <p><figure id="fig-1-2">
 <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:700px; font-family: sans-serif;">
@@ -467,9 +463,7 @@ Failure scores are lowest (0.43 / 0.29 / 0.38) because those incidents land prim
 and the knowledge it receives through shared postmortems is partial. Under LOCAL sharing, the
 off-diagonal cells would all be near zero — the team only learns from its own incidents.</p>
 <p><strong>Prevention K</strong> = the average of all 15 cells across all 20 teams at day 365.
-<strong>Transform %</strong> = how often the cosine similarity between a team's vector and an
-incoming incident's feature vector was high enough to trigger a structural update — a real change
-in how the team handles that class of failure, not just a small knowledge increment.</p>
+<strong>Transform %</strong> = how often a team successfully transformed an incoming postmortem into a structural update — a real change in how the team handles that class of failure, not just a small knowledge increment. Transformation is a probabilistic outcome, not a hard threshold: the probability of success scales with the cosine similarity between the recipient team's existing knowledge vector and the incoming incident's feature vector. High cognitive overlap makes transformation much more likely, but the outcome is not deterministic — even high-similarity events occasionally fail to transform, reflecting the empirical reality that causal ambiguity blocks transfer even when conditions appear favorable (Szulanski 1996).</p>
 <h3>Fixed Parameters (All Experiments)</h3>
 <p>The following parameter values are held constant across every simulation run in this study.
 Individual hypothesis sections document only the parameters that varied within that experiment.</p>
@@ -1512,7 +1506,7 @@ P_{\text{acquire}} = P_{\text{base}} \times \delta^{d}
     </tr>
     <tr style="background: #eaf4fb;">
       <td>Any distance (GLOBAL sharing)</td>
-      <td>0.9 × 1.0 (no decay; path_length treated as 1)</td>
+      <td>0.9 (no signal decay; broadcast through organization-wide channels)</td>
       <td>90%</td>
       <td>Yes — all 20 teams regardless of topology</td>
     </tr>
@@ -2290,7 +2284,7 @@ Asymmetry OFF:  P(learning event) = 0.9 × 0.70 × [cosine gate] × 0.60  &lt;  
 
 <p><strong>Zero variation (0.0%) across the full range.</strong> Signal decay is behaviorally dormant under NEIGHBOR: in this configuration, all learning teams are exactly one hop from the incident source, so decay<sup>1</sup> is just a flat multiplier that Stage 1's retry mechanism compensates for over time. The parameter becomes consequential in sparse-network or multi-hop GLOBAL configurations — it is designed for those cases, not vestigial. <strong>What this tells us about the model's robustness:</strong> under the NEIGHBOR baseline used throughout this section, the H1 finding cannot be an artifact of a particular decay choice because the parameter is inactive on the paths that matter.</p>
 <h3>8.8 Sweep 5 — Knowledge Decay Rate</h3>
-<p><strong>What was varied:</strong> the per-day exponential decay rate applied to accumulated team knowledge, swept from 0.0001 (~19 year half-life) to 0.05 (~2 week half-life), default 0.001 (~2 year half-life).</p>
+<p><strong>What was varied:</strong> the per-day decay rate applied to accumulated team knowledge as a discrete linear factor (<code>K(t) = K(t−1) × (1 − decay_rate)</code>), swept from 0.0001 (~19 year half-life) to 0.05 (~2 week half-life), default 0.001 (~2 year half-life). For small decay rates this discrete formulation closely approximates exponential decay (the two differ by less than 0.1% over the 365-day simulation horizon).</p>
 <table>
     <thead>
       <tr>
