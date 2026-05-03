@@ -90,11 +90,11 @@ cd 02-Framework-Code && python3 publication_tests.py
 |---|---|---|
 | 1 | Cohen & Levinthal (1990) | You can only absorb what you already partly know — prior knowledge gates everything |
 | 2 | Zahra & George (2002) | The four-stage ACAP pipeline: acquisition → assimilation → transformation → exploitation |
-| 3 | March (1991) | Exploration vs. exploitation; heterogeneous populations beat homogeneous ones because diversity prevents premature convergence |
+| 3 | March (1991) | Competency trap + value of heterogeneity; borrowed selectively — sharing scopes are NOT mapped onto exploration vs. exploitation |
 | 4 | Argote & Miron-Spektor (2011) | Create / retain / transfer — the broadest organizing framework for org learning |
-| 5 | Nooteboom et al. (2007) | Inverted-U with cognitive distance: absorptive capacity is the bottleneck, moderated by distance |
-| 6 | Szulanski (1996) | Knowledge transfer fails on cognitive barriers (causal ambiguity, absorptive capacity), not motivation |
-| 7 | Levinthal (1997) | Diminishing returns to local search on rugged fitness landscapes (frame as adaptation, not knowledge) |
+| 5 | Nooteboom et al. (2007) | Absorptive capacity declines with cognitive distance — Stage 3 cosine-similarity gate; only the downward half of the inverted-U is modeled |
+| 6 | Szulanski (1996) | Inter-unit transfer fails on cognitive barriers (causal ambiguity, absorptive capacity), not motivation — explains NEIGHBOR's 14% transformation, not LOCAL |
+| 7 | Levinthal (1997) | Concave diminishing-returns curve from local adaptive search — borrowed only as the canonical shape for H3, not as a knowledge-accumulation model |
 
 ### Learning from Incidents (11)
 
@@ -107,10 +107,10 @@ cd 02-Framework-Code && python3 publication_tests.py
 | 12 | Dogga et al. (2023) | ARTS taxonomy from 2,000+ Azure incidents — used as the type system for synthetic incidents |
 | 13 | Drupsteen & Guldenmund (2014) | Sharing-and-storing is the most underexposed sub-process in incident learning |
 | 14 | Margaryan et al. (2017) | Research agenda for LFI; identifies simulation as underused but appropriate methodology |
-| 15 | Reed (2019) | High performers use postmortems to patch mental models, not to generate fix lists (91% miss this) |
+| 15 | Reed (2019) | High performers use postmortems to patch mental models, not to generate fix lists (91% of Reed's interview sample miss this) |
 | 16 | Dingsøyr (2005) | Only 1-in-5 software projects do postmortems; zero of 19 companies are satisfied with their process |
 | 17 | Dekker (2014) | New View — human error is a symptom of systemic conditions; blame drives reporting underground |
-| 18 | Sujan, Huang & Braithwaite (2017) | Safety-II critique — also learn from successful operations (Ch 5 limitations citation) |
+| 18 | Sujan, Huang & Braithwaite (2017) | Safety-II *complements* Safety-I by also studying successful operations — scope-honesty citation for Ch 5, not a refutation of incident-based learning |
 
 ### Network Structure (7)
 
@@ -146,7 +146,7 @@ cd 02-Framework-Code && python3 publication_tests.py
 | 31 | Epstein (1999) | "If you didn't grow it, you didn't explain its emergence" — generative social science |
 | 32 | Harrison et al. (2007) | Simulation is a legitimate primary research method when controlled experiments are infeasible |
 | 33 | Carley (1992) | Foundational ABM of org learning — knowledge loss × task interdependence drives net learning |
-| 34 | Müller, Kudic & Vermeulen (2021) | ABM precedent for knowledge diffusion in org networks (different domain, same lineage) |
+| 34 | Müller, Kudic & Vermeulen (2021) | Methodological cousin — ABM of inter-firm R&D knowledge networks; precedent for the lineage, not a near-replica of this thesis |
 | 35 | Sargent (2020) | Validity is purpose-relative — exploratory models require lower accuracy thresholds than predictive ones |
 | 36 | Grimm et al. (2020) | ODD protocol — the seven-element standard for documenting agent-based models |
 
