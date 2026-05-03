@@ -1465,3 +1465,91 @@ Together these establish: incidents are emergent (Leveson + Cook); blame destroy
 - Sujan's *role* here is scope-honesty (naming what the model doesn't capture); not used as evidence for any quantitative claim, methodological choice, or results interpretation — keep it in this lane
 
 ---
+
+### 37. Cohen (1988) — Statistical Power Analysis for the Behavioral Sciences
+
+**Journal/Source:** Lawrence Erlbaum Associates (book, 2nd ed.)
+**Bib key:** `cohen1988`
+
+**Author authority:** **Jacob Cohen** (NYU) is the canonical authority on effect-size statistics in the behavioral and social sciences. This book established the conventional thresholds — d = 0.2 (small), d = 0.5 (medium), d = 0.8 (large) — that remain the field standard for interpreting Cohen's d. Required reference for any quantitative behavioral research reporting effect sizes.
+
+**Raw notes:**
+- Defines Cohen's d as (M₁ − M₂) / SD_pooled — the standardized mean difference between two groups
+- Conventional thresholds: 0.2 small, 0.5 medium, 0.8 large
+- Effects above 0.8 are "large"; effects above ~2.0 are unusually large for behavioral research
+- Power-analysis framework for determining sample size given expected effect
+
+**Summary:** The foundational reference for effect-size interpretation in behavioral research. Establishes the conventional small/medium/large thresholds for Cohen's d that the thesis relies on when characterizing the magnitude of H1 effects.
+
+**What I'm taking from it:** The conventional thresholds for interpreting Cohen's d. Without Cohen (1988), the H1 results (d = 3.91 NEIGHBOR, d = 7.72 GLOBAL, d = 11.51 vs. NONE) would have no anchor for the reader to judge magnitude.
+
+**Connection to my simulation:** Used in Chapter 4 (Results) to ground the magnitude characterization of H1 effect sizes. The H1 d values are *several multiples larger than Cohen's "large" threshold* (0.8) — the citation makes this magnitude claim defensible by anchoring to the field-standard reference.
+
+**Citation sentence:**
+> *"Effect sizes are reported as Cohen's d \cite{cohen1988}, with conventional interpretive thresholds of 0.2 (small), 0.5 (medium), and 0.8 (large); the H1 sharing-scope effects exceed the large-effect threshold by approximately an order of magnitude."*
+
+**What it does NOT claim:**
+- Methodology reference book, not a substantive theory citation
+- Does NOT validate the simulation's specific effect sizes — only provides the interpretive scale
+- Does NOT address whether large effects in simulation correspond to large effects in real organizations — that is a separate generalizability question
+
+---
+
+### 38. Allspaw (2010) — Web Operations: Keeping the Data on Time (Chapter 13)
+
+**Journal/Source:** O'Reilly Media (edited volume; J. Allspaw & J. Robbins, eds.)
+**Bib key:** `webops2010`
+
+**Author authority:** **John Allspaw** (then Etsy VP Tech Ops; co-editor of the volume with Jesse Robbins; see Entry 35 for full credentials including Lund MSc under Dekker and co-founding of Adaptive Capacity Labs with Cook and Woods). O'Reilly is the dominant technical-publishing house for software engineering practice; *Web Operations* is a peer-edited volume that went through book-quality review (not peer-reviewed in the academic sense, but a substantively higher bar than a blog post).
+
+**Raw notes:**
+- Edited volume of essays from senior practitioners on web operations practice
+- Allspaw's Chapter 13 covers the operational practices used at Etsy and predecessors, including incident response and review culture
+- Predates the 2012 *Code as Craft* blog post; the blog post extends and crystallizes themes introduced here
+- Same author authority and theoretical lineage (Hollnagel, Dekker, Reason) as Entry 35
+
+**Summary:** Allspaw's chapter in the O'Reilly *Web Operations* volume — the peer-edited venue version of the same practitioner observational claims that Entry 35 (the Etsy blog post) makes. Serves as the defensive backup citation when a committee member challenges the blog-post venue.
+
+**What I'm taking from it:** A peer-edited (not peer-reviewed, but book-quality reviewed) backup for the blameless-postmortem / Just Culture claims that Entry 35 makes from a blog post. Same content lineage; more defensible venue.
+
+**Connection to my simulation:** Defensive backup for Entry 35. Cite alongside `allspaw2012` if a committee member pushes back on the blog-post venue, or use as the sole citation in the most venue-conservative chapters.
+
+**Citation sentence:**
+> *"Allspaw \cite{webops2010,allspaw2012} documents structured blameless incident review as standard practice at mature engineering organizations, providing the practitioner-observational anchor for the simulation's truthful-sharing assumption."*
+
+**What it does NOT claim:**
+- Edited volume / book chapter — not peer-reviewed in the academic sense, but a substantively higher bar than a blog post
+- Does NOT prove blamelessness improves reliability empirically (same scope limit as Entry 35)
+- Plays the same role as Entry 35; not a separate citation, just a venue-stronger backup
+
+---
+
+### 39. Lane & Lubatkin (1998) — Relative Absorptive Capacity and Interorganizational Learning
+
+**Journal/Source:** Strategic Management Journal, 19(5), 461–477
+**Bib key:** `lane1998`
+
+**Author authority:** **Peter J. Lane** and **Michael Lubatkin** (both then University of Connecticut) extended Cohen & Levinthal's (1990) absorptive capacity framework from the firm-as-unit-of-analysis to the *dyadic* level — making AC a property of the *learner-teacher pair*, not just the learner. *Strategic Management Journal* is a Tier 1 management journal; this paper has 4,000+ citations and is the canonical reference for relative/dyadic absorptive capacity.
+
+**Raw notes:**
+- **Relative absorptive capacity:** AC is not a single firm property but depends on the *similarity* between learner and teacher (similar knowledge bases, organizational structures, dominant logics)
+- Empirical: 31 R&D pharmaceutical alliances; AC predicts learning outcomes better when measured *relative to the partner*
+- Foundational for cosine-similarity-based AC operationalizations in subsequent ABM literature — the simulation's Stage 3 cosine-similarity gate descends from this lineage
+- "Minimal model": straight similarity (linear in cosine), the default the simulation uses; the inverted-U (Nooteboom 2007) is a robustness condition, not the default
+
+**Summary:** Extends Cohen & Levinthal's absorptive capacity from a single-firm property to a *dyadic* property dependent on the similarity between learner and teacher. The foundational paper for cosine-similarity-based operationalization of AC, which is what the simulation uses as the default Stage 3 gate.
+
+**What I'm taking from it:** Theoretical lineage for the simulation's default cosine-similarity Stage 3 transformation gate. Without Lane & Lubatkin, the cosine-similarity choice looks like a modeling convenience; with Lane & Lubatkin, it is the canonical operationalization of relative AC in the absorptive-capacity literature.
+
+**Connection to my simulation:** Used in Chapter 3 §3.4.3 as the citation justifying the "default = straight similarity, no inverted-U" cosine model for the Stage 3 transformation gate. Pairs with Cohen & Levinthal (1990, Entry 12) for the AC framework and Nooteboom (2007, Entry 16) for the inverted-U robustness condition. Also serves as a committee-watch backup for the question "why is the inverted-U toggle off by default?"
+
+**Citation sentence:**
+> *"The simulation's default Stage 3 transformation gate uses straight cosine similarity between source-team and receiver-team knowledge vectors, following Lane \& Lubatkin's \cite{lane1998} relative absorptive capacity framework in which learning depends on the similarity of the learner-teacher pair; Nooteboom's (2007) inverted-U is tested as a robustness condition in §3.7."*
+
+**What it does NOT claim:**
+- Empirical setting is R&D pharmaceutical alliances — generalization to within-firm software-incident learning is conceptual, not empirical
+- Does NOT predict the *magnitude* of dyadic AC effects in the simulation — provides the form (similarity-dependent), not the parameters
+- The "minimal model" framing here is the thesis's interpretive choice; Lane & Lubatkin themselves do not argue against the inverted-U
+- Plays a default-model-justification role only; not used as evidence for results or as a methodology defense citation
+
+---
