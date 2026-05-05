@@ -24,12 +24,3 @@ To make the four-stage pipeline concrete, consider a single incident traced from
 - If a reviewer asks for a methodological citation on the cosine similarity computation, forward-reference Section 3.3 (Model Architecture), where that measure is formally defined.
 
 ---
-## Committee Watch
-
-1. **"Where do the specific numbers come from?"** The probabilities (0.9, 0.8, 0.7, 0.6) are the simulation's parameter values, not empirically derived from this incident. Be ready to point to the parameter table in Section 3.7 and the calibration rationale in Section 3.8. The knowledge cell increment (0.31 → 0.44) is a plausible illustrative value consistent with the model's update rule; if pressed, clarify that the exact value depends on the exploitation magnitude parameter, which is documented in the experimental design section.
-
-2. **"Why does Team A skip Stages 2–4?"** It does not — Team A experiences the incident directly and implicitly completes all four stages as the source. The worked example focuses on the propagation pipeline for non-source teams because that is where sharing scope makes a difference. Clarify that source-team learning is modeled as a deterministic event.
-
-3. **"Is the 19-event claim correct?"** Under GLOBAL with 20 teams and one source team excluded from the count, the maximum is 19 downstream transfer attempts. Not all 19 will succeed — each team's acquisition, assimilation, transformation, and exploitation rolls are independent. The 19 figure is the upper bound on pipeline entries, not on successful exploitations. Be precise about this distinction.
-
-4. **"How does the 45% figure connect to this one incident?"** The 45% reduction is a simulation-wide aggregate across all experimental runs, not an extrapolation from this single incident. This section uses the one incident to illustrate the mechanism; the aggregate result is established in Chapter 4. The closing paragraph makes this connection explicit, but the committee may want you to say it aloud at the defense.
