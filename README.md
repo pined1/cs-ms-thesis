@@ -1,7 +1,7 @@
 # MS Thesis: Organizational Learning from Software Incidents
 
 **David Pineda | BYU Computer Science MS**
-**Advisor: Jonathan Lunt**
+**Advisor: Jonathan Sillito**
 
 > Does sharing incident knowledge more broadly reduce software system failures? This thesis uses an agent-based simulation to study how sharing scope, network topology, deployment velocity, and learning effectiveness interact to determine organizational reliability.
 
